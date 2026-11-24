@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Bot Asistente FÉNIX - Hospital San José de Maicao",
+  "version": "1.0",
+  "description": "Asistente inteligente de auditoría y cargue seguro de indicadores técnico-científicos en la plataforma FÉNIX de Supersalud",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://fenix.supersalud.gov.co/*",
+        "http://fenix.supersalud.gov.co/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

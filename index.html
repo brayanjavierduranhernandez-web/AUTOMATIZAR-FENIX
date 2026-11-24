@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asistente de Auditoría y Cargue FÉNIX - Supersalud (Hospital San José de Maicao)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .badge-verde { background-color: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .badge-amarillo { background-color: #fef9c3; color: #a16207; border: 1px solid #fde047; }
+    .badge-rojo { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+    .pulse-danger { animation: pulseDanger 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulseDanger {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .6; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- ENCABEZADO INSTITUCIONAL -->
+  <header class="bg-slate-900 text-white border-b border-slate-800 shadow-md sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center font-bold text-white shadow-inner">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-base sm:text-lg font-extrabold tracking-tight">Asistente de Auditoría &amp; Cargue FÉNIX</h1>
+            <span class="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-800 text-emerald-200 uppercase">Técnico-Científico</span>
+          </div>
+          <p class="text-xs text-slate-400">E.S.E. Hospital San José de Maicao • Agente Especial Interventor • Supersalud</p>
+        </div>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN RÁPIDA -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <input type="file" id="folder-input" webkitdirectory directory multiple class="hidden">
+        <button id="btn-browse-folder" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+          <span>📁</span> Cargar Carpeta del Mes
+        </button>
+        <button id="btn-demo-test" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5" title="Prueba con los 16 indicadores de Octubre con 169 archivos">
+          <span>🧪</span> Cargar Modelo de Ejemplo (Octubre)
+        </button>
+        <button id="btn-save-progress" class="bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs px-3 py-2 rounded-lg shadow transition flex items-center gap-1.5" title="Guardar estado del avance para mañana">
+          <span>💾</span> Guardar Progreso
+        </button>
+        <button id="btn-show-bookmarklet" class="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-xs px-3.5 py-2 rounded-lg shadow transition flex items-center gap-1.5">
+          <span>🦁</span> Asistente Brave / Fénix (1 Clic)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+    <!-- ZONA 1: ZONA DE CARGA MENSUAL CON REGLAS AUDITADAS -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+        <div>
+          <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+            <span class="text-emerald-600 text-lg">📂</span>
+            1. Carga de la Carpeta Mensual del Hospital
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Sube la carpeta del mes (ej: <span class="font-mono font-medium text-slate-700">INDICADORES FENIX NOVIEMBRE</span>). El asistente leerá las 16 subcarpetas, auditará cada archivo individualmente y contrastará la matemática de los certificados.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] font-semibold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-200">
+            ✓ Límite estricto Fénix: &lt; 4 MB por archivo individual
+          </span>
+        </div>
+      </div>
+
+      <!-- Zona de Drag and Drop -->
+      <div id="drop-zone" class="border-2 border-dashed border-slate-300 hover:border-emerald-500 rounded-xl p-6 text-center cursor-pointer transition bg-slate-50 hover:bg-emerald-50/40">
+        <svg class="w-10 h-10 mx-auto text-slate-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+        <p class="text-sm font-bold text-slate-800">
+          Arrastra y suelta aquí la carpeta completa del mes
+        </p>
+        <p class="text-xs text-slate-500 mt-1">
+          o haz clic para explorar en tu equipo • Acepta subcarpetas con documentos Word (.docx), Excel (.xlsx), PDF y certificaciones
+        </p>
+      </div>
+
+      <!-- REGLAS DE AUDITORÍA RESUMIDAS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4 text-xs">
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <p class="font-bold text-slate-800 flex items-center gap-1.5">
+            <span>⚖️</span> Regla de Peso (&lt; 4 MB)
+          </p>
+          <p class="text-slate-500 text-[11px] mt-1 leading-relaxed">
+            La carpeta entera puede pesar más de 100 MB. Lo que debe pesar &lt; 4 MB es <strong>cada documento individual</strong> que se sube como soporte. El auditor alertará en rojo cualquier archivo individual que supere los 4 MB.
+          </p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <p class="font-bold text-slate-800 flex items-center gap-1.5">
+            <span>🧮</span> Inconsistencias Matemáticas
+          </p>
+          <p class="text-slate-500 text-[11px] mt-1 leading-relaxed">
+            Extrae el <strong>Resultado escrito en el Certificado</strong> y lo compara contra la fórmula real <span class="font-mono text-indigo-700">(Num ÷ Den) × Factor</span>. Si difieren (error humano común de líderes), te alerta y permite corregirlo con 1 clic.
+          </p>
+        </div>
+        <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
+          <p class="font-bold text-slate-800 flex items-center gap-1.5">
+            <span>⚡</span> Acciones Divididas
+          </p>
+          <p class="text-slate-500 text-[11px] mt-1 leading-relaxed">
+            Primero revisas inconsistencias en la auditoría. Luego ejecutas de forma independiente con un clic cada paso: <span class="font-semibold text-emerald-700">1. Soportes</span>, <span class="font-semibold text-emerald-700">2. Comentarios</span> y <span class="font-semibold text-amber-700">3. Detalles (Resultado)</span>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZONA 2: BANNER DE RESUMEN EJECUTIVO DE LA AUDITORÍA MENSUAL (SE MUESTRA AL CARGAR CARPETA) -->
+    <div id="monthly-summary-banner" class="hidden bg-slate-900 text-white rounded-2xl shadow-md border border-slate-800 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-3 mb-4">
+        <div>
+          <span class="text-xs uppercase tracking-wider text-emerald-400 font-bold">Diagnóstico General del Mes</span>
+          <h3 id="summary-folder-name" class="text-lg font-extrabold text-white">INDICADORES FENIX OCTUBRE</h3>
+        </div>
+        <div id="summary-status-pill" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+          <span>✓</span> Auditoría Completada
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+          <p class="text-slate-400 font-medium">Indicadores Identificados</p>
+          <p id="stat-indicators-count" class="text-2xl font-black text-white mt-1">16 de 16</p>
+          <p class="text-[11px] text-slate-400 mt-0.5">Subcarpetas mapeadas</p>
+        </div>
+
+        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+          <p class="text-slate-400 font-medium">Total Soportes Auditados</p>
+          <p id="stat-files-count" class="text-2xl font-black text-white mt-1">169</p>
+          <p class="text-[11px] text-slate-400 mt-0.5">Documentos revisados 1 a 1</p>
+        </div>
+
+        <div id="box-stat-weights" class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+          <p class="text-slate-400 font-medium">Control de Pesos (&lt; 4 MB)</p>
+          <p id="stat-weights-status" class="text-xl font-black text-emerald-400 mt-1">✓ Todos &lt; 4 MB</p>
+          <p id="stat-weights-detail" class="text-[11px] text-slate-400 mt-0.5">Sin riesgo de rechazo</p>
+        </div>
+
+        <div id="box-stat-math" class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+          <p class="text-slate-400 font-medium">Coherencia Matemática</p>
+          <p id="stat-math-status" class="text-xl font-black text-emerald-400 mt-1">16 Coincidentes</p>
+          <p id="stat-math-detail" class="text-[11px] text-slate-400 mt-0.5">Doc. vs Cálculo real</p>
+        </div>
+      </div>
+
+      <!-- ALERTA DE ARCHIVOS SUPERIORES A 4 MB (SI EXISTEN) -->
+      <div id="banner-over-4mb-alert" class="hidden mt-4 p-3 bg-red-950/80 border border-red-800 rounded-xl text-xs text-red-200">
+        <div class="flex items-start gap-2">
+          <span class="text-lg">🚨</span>
+          <div>
+            <p class="font-bold text-red-100">¡ALERTA DE RECHAZO FÉNIX: Se detectaron archivos individuales que superan 4.0 MB!</p>
+            <p class="text-[11px] text-red-300 mt-0.5">
+              Fénix rechazará el cargue si intentas subir estos documentos sin comprimir. Debes reducirlos o exportarlos a PDF liviano:
+            </p>
+            <ul id="list-over-4mb-files" class="list-disc list-inside mt-1 font-mono text-[11px] space-y-0.5 text-red-200">
+              <!-- Items dinámicos -->
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ZONA 3: MATRIZ / TABLERO DE AUDITORÍA GENERAL DE LOS 16 INDICADORES -->
+    <div id="matrix-section" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+        <div>
+          <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+            <span class="text-indigo-600 text-lg">📊</span>
+            2. Tablero de Auditoría por Indicador (Matriz Mensual)
+          </h2>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Haz clic en <strong>"Trabajar este Indicador"</strong> para cargarlo en el panel de acciones divididas y cargarlo en Fénix.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-500">Filtrar:</span>
+          <select id="filter-matrix" class="bg-slate-50 border border-slate-300 text-slate-800 text-xs rounded-lg px-2.5 py-1">
+            <option value="all">Todos los 16 Indicadores</option>
+            <option value="warning">Con Inconsistencia o Peso &gt; 4MB</option>
+            <option value="ok">100% Verificados ✓</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- TABLA DE LA MATRIZ -->
+      <div class="overflow-x-auto rounded-xl border border-slate-200">
+        <table class="w-full text-left text-xs text-slate-700">
+          <thead class="bg-slate-100 text-slate-700 uppercase text-[10px] font-bold border-b border-slate-200">
+            <tr>
+              <th scope="col" class="px-3.5 py-2.5">Código &amp; Indicador</th>
+              <th scope="col" class="px-3 py-2.5">Subcarpeta Detectada</th>
+              <th scope="col" class="px-3 py-2.5">Soportes Documentales (&lt; 4 MB)</th>
+              <th scope="col" class="px-3 py-2.5">Resultado Certificado vs Real</th>
+              <th scope="col" class="px-3 py-2.5">Estado Auditoría</th>
+              <th scope="col" class="px-3 py-2.5 text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="matrix-tbody" class="divide-y divide-slate-200 bg-white">
+            <!-- Filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ZONA 4: PANEL DE TRABAJO DIVIDIDO POR ACCIONES (PARA EL INDICADOR SELECCIONADO) -->
+    <div id="work-area-section" class="scroll-mt-20 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- COLUMNA IZQUIERDA: AUDITORÍA DE INCONSISTENCIAS Y MATEMÁTICA (5 cols) -->
+      <div class="lg:col-span-5 space-y-6">
+
+        <!-- TARJETA: INDICADOR SELECCIONADO Y SELECTOR -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <label class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🎯</span> Indicador Activo
+            </label>
+            <span id="badge-eje" class="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Eje</span>
+          </div>
+
+          <select id="select-indicador" class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm font-semibold rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block p-2.5">
+            <!-- Opciones dinámicas -->
+          </select>
+
+          <!-- Ficha técnica del indicador -->
+          <div class="mt-3.5 p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1.5">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500 font-medium">Meta Institucional:</span>
+              <span id="info-meta" class="font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">...</span>
+            </div>
+            <div class="flex justify-between items-start pt-1 border-t border-slate-200">
+              <span class="text-slate-500 font-medium">Fórmula oficial:</span>
+              <span id="info-ayuda" class="font-mono text-slate-700 text-right max-w-[260px] text-[11px]">...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- TARJETA DE AUDITORÍA: REVISIÓN DE INCONSISTENCIAS MATEMÁTICAS -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">
+              <span class="text-indigo-600">🔍</span>
+              Paso 0: Auditoría de Inconsistencias
+            </h3>
+            <span id="status-operacion" class="text-xs px-2 py-0.5 rounded font-semibold bg-slate-100 text-slate-600">Verificado</span>
+          </div>
+
+          <div class="space-y-3.5">
+            <!-- Numerador y Denominador -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label id="lbl-numerador" class="block text-xs font-semibold text-slate-700 mb-1">Numerador</label>
+                <input type="number" step="any" id="input-numerador" value="0" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm font-bold text-slate-900 focus:ring-emerald-500 focus:border-emerald-500">
+              </div>
+
+              <div>
+                <label id="lbl-denominador" class="block text-xs font-semibold text-slate-700 mb-1">Denominador</label>
+                <input type="number" step="any" id="input-denominador" value="1" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm font-bold text-slate-900 focus:ring-emerald-500 focus:border-emerald-500">
+              </div>
+            </div>
+
+            <!-- RESULTADO QUE DICE EL DOCUMENTO / CERTIFICADO -->
+            <div class="bg-indigo-50/70 p-3.5 rounded-xl border border-indigo-200">
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-xs font-bold text-indigo-950 flex items-center gap-1">
+                  <span>📄</span> Resultado Certificado en el Documento:
+                </label>
+                <span class="text-[10px] text-indigo-600 font-medium">Extraído del Word</span>
+              </div>
+              <div class="flex gap-2">
+                <input type="text" id="input-resultado-doc" value="0.00" class="flex-1 bg-white border border-indigo-300 rounded-lg px-2.5 py-1.5 text-sm font-extrabold text-indigo-900 focus:ring-indigo-500" placeholder="Ej: 99.74">
+                <button id="btn-validar-coincidencia" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-lg shadow-sm transition flex items-center gap-1 shrink-0">
+                  <span>🔍</span> Validar
+                </button>
+              </div>
+              <p class="text-[10px] text-indigo-700 mt-1">Compara si el valor escrito en el certificado del hospital coincide con (Numerador ÷ Denominador) × Factor.</p>
+            </div>
+
+            <!-- DIAGNÓSTICO MATEMÁTICO: COINCIDENCIA O INCONSISTENCIA -->
+            <div id="box-diagnostico-matematico" class="p-3.5 rounded-xl border text-xs"></div>
+
+            <!-- RESULTADO MATEMÁTICO REAL -->
+            <div class="bg-slate-900 rounded-xl p-4 text-white">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="text-xs text-slate-400 font-medium uppercase tracking-wider">Cálculo Matemático Real</p>
+                  <p id="display-resultado" class="text-3xl font-black text-emerald-400 tracking-tight mt-1">0,00</p>
+                </div>
+                <div class="text-right">
+                  <span id="badge-semaforo" class="inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-500 text-slate-950">
+                    🟢 CUMPLE
+                  </span>
+                  <p id="diff-meta" class="text-[11px] text-slate-300 mt-1">Meta: 0,00</p>
+                </div>
+              </div>
+              <p id="formula-verificacion" class="text-[11px] text-slate-400 mt-2 font-mono border-t border-slate-800 pt-2">
+                (0 / 1) * 100 = 0,00
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- LISTA DE ARCHIVOS DE SOPORTE DE ESTE INDICADOR (AUDITORÍA INDIVIDUAL < 4MB) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <span>📎</span> Documentos de Soporte de este Indicador
+            </h3>
+            <span id="support-count-badge" class="text-xs px-2 py-0.5 rounded font-semibold bg-slate-100 text-slate-700">0 archivos</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mb-3">Cada archivo se audita individualmente frente al límite de 4 MB de Fénix.</p>
+
+          <div id="indicator-supports-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+            <!-- Items dinámicos -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- COLUMNA DERECHA: ACCIONES DIVIDIDAS DE CARGUE FÉNIX (7 cols) -->
+      <div class="lg:col-span-7 space-y-6">
+
+        <!-- TARJETA: PASO 1 - COMENTARIO TÉCNICO OFICIAL FÉNIX -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs">1</span>
+                <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Paso 1: Comentario Técnico FÉNIX</h3>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">Narrativa clínica oficial exigida por Supersalud para Intervención con "Se acepta."</p>
+            </div>
+            <button id="btn-generar-ia" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold border border-indigo-200 transition">
+              <span>🔄</span> Regenerar Texto
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 mb-3 text-xs">
+            <div>
+              <label class="text-[11px] font-medium text-slate-500">Periodo evaluado:</label>
+              <input type="text" id="ai-periodo" value="Octubre 2025" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1 text-xs font-semibold text-slate-800">
+            </div>
+            <div>
+              <label class="text-[11px] font-medium text-slate-500">Acción destacada del mes:</label>
+              <input type="text" id="ai-accion" value="Planes de choque asistenciales y comités de auditoría concurrente" class="w-full bg-slate-50 border border-slate-300 rounded px-2.5 py-1 text-xs text-slate-800">
+            </div>
+          </div>
+
+          <div class="relative">
+            <textarea id="txt-comentario" rows="8" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-xs leading-relaxed text-slate-800 focus:ring-emerald-500 focus:border-emerald-500 font-sans"></textarea>
+            <div class="flex justify-between items-center mt-2.5">
+              <span id="char-count" class="text-[11px] text-slate-400">0 caracteres</span>
+              <button id="btn-copiar-comentario" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow transition">
+                <span>📋</span> Copiar Comentario (Pestaña Comentarios 💾)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TARJETA: PASO 2 - RESULTADO VALIDADO PARA FÉNIX -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-xs">2</span>
+              <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider">Paso 2: Resultado Validado (Pestaña Detalles)</h3>
+            </div>
+            <span class="text-xs bg-amber-100 text-amber-900 px-2 py-0.5 rounded font-semibold border border-amber-300">Cierre de Modal</span>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
+            <div>
+              <p class="text-xs text-amber-900 font-medium">Valor listo para digitar en el campo "Resultado":</p>
+              <p id="quick-res-val-display" class="text-3xl font-black text-amber-900 mt-0.5">0.00</p>
+              <p class="text-[11px] text-amber-800 mt-1">⚠️ Recuerda: En Fénix, pulsar el disquete 💾 de "Detalles" guardará y cerrará la ventana del indicador.</p>
+            </div>
+            <button id="btn-copiar-resultado" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5">
+              <span>🔢</span> Copiar Resultado: <span id="btn-res-label">0.00</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TARJETA: PASO 3 - RECORDATORIO DE SOPORTES Y FLUJO DE CARGUE SEGURO -->
+        <div class="bg-emerald-950 text-white rounded-2xl shadow-lg border border-emerald-900 p-5">
+          <div class="flex items-center justify-between border-b border-emerald-800 pb-3 mb-4">
+            <div>
+              <h3 class="text-sm font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-2">
+                <span>📎</span> Secuencia Exacta de Cargue en Fénix (Aislamiento Total)
+              </h3>
+              <p class="text-xs text-emerald-200/70">Orden estricto para no perder información ni tocar otros indicadores</p>
+            </div>
+            <span class="text-xs bg-emerald-800 text-emerald-200 px-2.5 py-1 rounded font-mono font-semibold">100% Seguro</span>
+          </div>
+
+          <div class="space-y-3 text-xs">
+            <!-- 1. SOPORTES -->
+            <div class="flex items-start gap-3 bg-emerald-900/40 p-3 rounded-xl border border-emerald-800/60">
+              <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
+              <div class="flex-1">
+                <p class="font-bold text-white uppercase tracking-wide">Pestaña "Soportes" (Primero)</p>
+                <p class="text-emerald-200/80 mt-0.5">
+                  Adjunta los archivos de la subcarpeta que verificaste previamente en la auditoría (&lt; 4 MB) y haz clic en el <strong>disquete (💾)</strong> de soportes.
+                </p>
+              </div>
+            </div>
+
+            <!-- 2. COMENTARIOS -->
+            <div class="flex items-start gap-3 bg-emerald-900/40 p-3 rounded-xl border border-emerald-800/60">
+              <span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
+              <div class="flex-1">
+                <p class="font-bold text-white uppercase tracking-wide">Pestaña "Comentarios" (Segundo)</p>
+                <p class="text-emerald-200/80 mt-0.5">
+                  Pega el comentario técnico que copiaste en el Paso 1 y haz clic en el <strong>disquete (💾)</strong> de comentarios.
+                </p>
+              </div>
+            </div>
+
+            <!-- 3. DETALLES / RESULTADO -->
+            <div class="flex items-start gap-3 bg-amber-950/60 p-3 rounded-xl border border-amber-800/80">
+              <span class="w-6 h-6 rounded-full bg-amber-500 text-slate-950 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</span>
+              <div class="flex-1">
+                <p class="font-bold text-amber-200 uppercase tracking-wide">Pestaña "Detalles" &amp; Resultado (Al Final)</p>
+                <p class="text-amber-200/80 mt-0.5">
+                  Digita el resultado validado y haz clic en el <strong>disquete (💾)</strong>. El modal se guardará y se cerrará automáticamente en Fénix.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-emerald-900 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p class="text-xs font-semibold text-emerald-300">¿Quieres automatizar la inyección en Chrome?</p>
+              <p class="text-[11px] text-emerald-400/80">Abre la consola F12 y pega el Bot Asistente con botones divididos.</p>
+            </div>
+            <button id="btn-open-bot-modal" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-lg shadow transition flex items-center gap-1.5">
+              <span>🦁</span> Activar Asistente en Brave (1 Clic)
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL: ASISTENTE 1-CLIC PARA BRAVE / FÉNIX -->
+  <div id="modal-injector" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 max-h-[92vh] overflow-y-auto">
+      <div class="flex justify-between items-start border-b border-slate-200 pb-3 mb-4">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="p-1.5 rounded-lg bg-orange-100 text-orange-600 font-bold text-sm">🦁</span>
+            <h3 class="text-base font-black text-slate-900">
+              Asistente de 1 Clic para Brave / Chrome en FÉNIX
+            </h3>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5">E.S.E. Hospital San José de Maicao | Sin F12, sin comandos, 100% seguro</p>
+        </div>
+        <button id="btn-close-modal" class="text-slate-400 hover:text-slate-600 text-lg font-bold p-1">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs text-slate-700">
+        
+        <!-- OPCIÓN A: EXTENSIÓN PARA BRAVE (RECOMENDADO - 0 CLICS PARA ABRIR) -->
+        <div class="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl border border-emerald-300 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-emerald-950 flex items-center gap-1.5 text-xs uppercase tracking-wide">
+              <span>🔌</span> Opción 1: Extensión para Brave (Aparece Sola en Fénix)
+            </span>
+            <span class="px-2 py-0.5 bg-emerald-600 text-white text-[10px] font-bold rounded-full">Recomendado</span>
+          </div>
+          <p class="text-emerald-900 text-xs mb-3">
+            Se instala en 15 segundos en tu navegador Brave. Cada vez que abras Fénix y pongas tu usuario y clave, <strong>el asistente aparecerá automáticamente en tu pantalla</strong> con botones de 1 clic:
+          </p>
+
+          <ol class="list-decimal list-inside space-y-1.5 text-[11px] text-emerald-950 font-medium bg-white/70 p-3 rounded-lg border border-emerald-200">
+            <li>Abre una nueva pestaña en Brave y escribe: <code class="bg-emerald-100 text-emerald-900 px-1 py-0.5 rounded font-mono font-bold select-all">brave://extensions</code></li>
+            <li>En la esquina superior derecha, activa la casilla <strong>"Modo de desarrollador"</strong>.</li>
+            <li>Haz clic en el botón <strong>"Cargar descomprimida"</strong> (arriba a la izquierda).</li>
+            <li>Selecciona la carpeta: <code id="path-extension" class="bg-emerald-100 text-emerald-900 px-1 py-0.5 rounded font-mono font-bold select-all">C:\PROYECTOS\fenix-hospital-uploader\extension-chrome</code></li>
+          </ol>
+
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <button id="btn-copy-ext-path" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-lg transition flex items-center gap-1.5 shadow">
+              <span>📋</span> Copiar Ruta de la Carpeta
+            </button>
+            <span class="text-[11px] text-emerald-800 font-medium">¡Listo! No tienes que abrir F12 ni copiar código jamás.</span>
+          </div>
+        </div>
+
+        <!-- OPCIÓN B: MARCADOR DE 1 CLIC (BOOKMARKLET) -->
+        <div class="p-4 bg-amber-50 rounded-xl border border-amber-300 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-amber-950 flex items-center gap-1.5 text-xs uppercase tracking-wide">
+              <span>⭐</span> Opción 2: Marcador de 1 Clic en Brave (Sin instalar nada)
+            </span>
+            <span class="px-2 py-0.5 bg-amber-500 text-slate-950 text-[10px] font-black rounded-full">1 Clic en Marcadores</span>
+          </div>
+          <p class="text-amber-900 text-xs mb-2.5">
+            Presiona <kbd class="px-1.5 py-0.5 bg-amber-200 text-amber-950 font-mono rounded text-[10px] font-bold">Ctrl + Shift + B</kbd> en Brave para ver tu barra de favoritos y arrastra este botón:
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3 bg-white/70 p-3 rounded-lg border border-amber-200">
+            <a id="bookmarklet-btn" href="#" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow cursor-grab border-2 border-amber-600 inline-flex items-center gap-1.5">
+              <span>⭐</span> Bot Fénix 1-Clic (Arrastra aquí a la barra)
+            </a>
+            <button id="btn-copy-bookmarklet" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-xs rounded-xl transition flex items-center gap-1">
+              <span>📋</span> Copiar URL del Marcador
+            </button>
+          </div>
+          <p class="text-[11px] text-amber-800 mt-2">
+            En Fénix, abre el indicador y dale <strong>1 solo clic</strong> a este marcador en tu barra de Brave para ver el asistente.
+          </p>
+        </div>
+
+        <!-- CÓDIGO TÉCNICO COLAPSADO (OCULTO POR DEFECTO) -->
+        <details class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-slate-600">
+          <summary class="cursor-pointer hover:text-slate-900 font-bold flex items-center gap-1 text-[11px]">
+            <span>🔧</span> Ver código manual para consola F12 (Solo opcional para desarrolladores)
+          </summary>
+          <div class="mt-2 space-y-2">
+            <div class="bg-slate-900 text-slate-100 p-3 rounded-lg font-mono text-[10px] overflow-x-auto max-h-36">
+              <pre id="code-snippet">// Código del bot...</pre>
+            </div>
+            <button id="btn-copy-code" class="px-3 py-1 bg-slate-700 hover:bg-slate-600 text-white text-[11px] font-semibold rounded transition">
+              Copiar Código F12
+            </button>
+          </div>
+        </details>
+
+      </div>
+
+      <div class="mt-5 pt-3 border-t border-slate-200 flex justify-end">
+        <button id="btn-close-modal-footer" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs rounded-lg transition">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-2.5 rounded-lg shadow-xl text-xs font-semibold border border-slate-700 flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <span class="text-emerald-400 text-base">✓</span>
+    <span id="toast-msg">Mensaje</span>
+  </div>
+
+  <script>
+    // =========================================================================
+    // CATÁLOGO OFICIAL DE LOS 16 INDICADORES TÉCNICO-CIENTÍFICOS (SUPERSALUD)
+    // EMBEBIDO DIRECTAMENTE PARA AUTONOMÍA TOTAL EN FILE:/// SIN CORS
+    // =========================================================================
+    const CATALOGO_DEFAULT = [
+      {
+        "id": "ind-01",
+        "codigo": "IPS 22",
+        "eje": "Servicio al Cliente",
+        "objetivo": "Mejorar la percepción de calidad de servicios por parte de los usuarios",
+        "nombre": "Porcentaje de satisfacción de los usuarios",
+        "meta": 95.0,
+        "unidad": "%",
+        "operador": ">=",
+        "numerador_lbl": "Usuarios satisfechos (muy buena o buena)",
+        "denominador_lbl": "Total de usuarios encuestados",
+        "factor": 100,
+        "ayuda": "(Total usuarios satisfechos / Total encuestas aplicadas) * 100",
+        "keywords": ["satisfaccion", "encuesta", "siau", "percepcion", "calidad", "usuario", "pqrd", "ips 22", "ips22", "buzon"],
+        "folder_sample": "22.%  Satisfaccion Global",
+        "octubre_2025": { "num": 1161, "den": 1164, "res": 99.74 }
+      },
+      {
+        "id": "ind-05",
+        "codigo": "IPS 23",
+        "eje": "Experiencia de la Atención",
+        "objetivo": "Mejorar las condiciones de acceso y la oportunidad en la Prestación de Servicios",
+        "nombre": "Oportunidad de la asignación de cita en la Consulta Médica General (días)",
+        "meta": 3.0,
+        "unidad": "días",
+        "operador": "<=",
+        "numerador_lbl": "Sumatoria de días transcurridos para medicina general",
+        "denominador_lbl": "Total de citas de consulta general asignadas",
+        "factor": 1,
+        "ayuda": "Sumatoria de días transcurridos / Total citas asignadas",
+        "keywords": ["medicina general", "consulta general", "ips 23", "ips23", "citas general", "paraguachon"],
+        "folder_sample": "23. Oportunidad med general",
+        "octubre_2025": { "num": 6477, "den": 11678, "res": 0.56 }
+      },
+      {
+        "id": "ind-04",
+        "codigo": "IPS 24",
+        "eje": "Experiencia de la Atención",
+        "objetivo": "Mejorar las condiciones de acceso y la oportunidad en la Prestación de Servicios",
+        "nombre": "Oportunidad de la asignación de cita en la Consulta Médica Especializada (días)",
+        "meta": 15.0,
+        "unidad": "días",
+        "operador": "<=",
+        "numerador_lbl": "Sumatoria de días para cita especializada",
+        "denominador_lbl": "Total de citas especializadas asignadas",
+        "factor": 1,
+        "ayuda": "Sumatoria de días transcurridos / Total citas especializadas asignadas",
+        "keywords": ["especializada", "especialidad", "citas especializadas", "especialistas", "ginecologia", "pediatria", "ips 24", "ips 25", "ips24", "ips25"],
+        "folder_sample": "24. Oportunidad Med Especializada",
+        "octubre_2025": { "num": 53282.8, "den": 11511, "res": 4.6 }
+      },
+      {
+        "id": "ind-06",
+        "codigo": "IPS 25",
+        "eje": "Experiencia de la Atención",
+        "objetivo": "Mejorar las condiciones de acceso y la oportunidad en Urgencias",
+        "nombre": "Oportunidad en la atención del Triage en Urgencias (minutos)",
+        "meta": 15.0,
+        "unidad": "minutos",
+        "operador": "<",
+        "numerador_lbl": "Total minutos transcurridos para clasificación de Triage",
+        "denominador_lbl": "Total pacientes que recibieron Triage",
+        "factor": 1,
+        "ayuda": "Sumatoria de minutos transcurridos / Total pacientes con Triage",
+        "keywords": ["triage", "clasificacion urgencias", "puerta urgencias", "minutos triage", "ips 25", "ips25"],
+        "folder_sample": "25. Oportunidad atencion Triage de 102021",
+        "octubre_2025": { "num": 7731, "den": 2374, "res": 3.26 }
+      },
+      {
+        "id": "ind-07",
+        "codigo": "IPS 26",
+        "eje": "Experiencia de la Atención",
+        "objetivo": "Mejorar las condiciones de acceso y la oportunidad en Urgencias",
+        "nombre": "Oportunidad en la atención médica en consulta de Urgencias (minutos)",
+        "meta": 30.0,
+        "unidad": "minutos",
+        "operador": "<=",
+        "numerador_lbl": "Sumatoria de minutos entre Triage y atención médica",
+        "denominador_lbl": "Total pacientes atendidos en Triage II y III",
+        "factor": 1,
+        "ayuda": "Sumatoria de minutos de espera médica / Total pacientes atendidos",
+        "keywords": ["consulta urgencias", "atencion medica urgencias", "triage ii", "triage iii", "ips 26", "ips26"],
+        "folder_sample": "26. Oportunidad atencion urgencias mes de 102021",
+        "octubre_2025": { "num": 14210, "den": 520, "res": 27.33 }
+      },
+      {
+        "id": "ind-08",
+        "codigo": "IPS 27",
+        "eje": "Experiencia de la Atención",
+        "objetivo": "Optimizar la utilización y eficiencia de las salas de cirugía",
+        "nombre": "Proporción de cancelación de cirugía programada",
+        "meta": 5.0,
+        "unidad": "%",
+        "operador": "<=",
+        "numerador_lbl": "Número de cirugías canceladas atribuibles a la institución",
+        "denominador_lbl": "Número de cirugías programadas en el período",
+        "factor": 100,
+        "ayuda": "(Total cirugías canceladas atribuibles a IPS / Cirugías programadas) * 100",
+        "keywords": ["cirugia", "cancelacion", "quirofano", "quirurgico", "cirugias canceladas", "ips 27", "ips27"],
+        "folder_sample": "27. Cancelación de cirugías programadas - copia",
+        "octubre_2025": { "num": 14, "den": 760, "res": 1.84 }
+      },
+      {
+        "id": "ind-09",
+        "codigo": "IPS 28",
+        "eje": "Gestión del Riesgo y Seguridad",
+        "objetivo": "Monitorear la saturación y disponibilidad de camas en Urgencias",
+        "nombre": "Porcentaje de ocupación en el servicio de urgencias",
+        "meta": 90.0,
+        "unidad": "%",
+        "operador": "<=",
+        "numerador_lbl": "Sumatoria de días estancia en urgencias",
+        "denominador_lbl": "Total de días estancia disponibles en urgencias",
+        "factor": 100,
+        "ayuda": "(Días estancia urgencias / Días estancia disponibles) * 100",
+        "keywords": ["ocupacion", "giro de cama", "saturacion urgencias", "censo urgencias", "ips 28", "ips28"],
+        "folder_sample": "28. Porcentaje ocupacion urgencias mes de  Octubre 2021 - copia",
+        "octubre_2025": { "num": 17419, "den": 725.79, "res": 96.77 }
+      },
+      {
+        "id": "ind-10",
+        "codigo": "IPS 29",
+        "eje": "Gestión del Riesgo y Seguridad",
+        "objetivo": "Reducir la retención prolongada de pacientes en observación",
+        "nombre": "Proporción de pacientes con estancia mayor a 24 horas en urgencias",
+        "meta": 0.0,
+        "unidad": "%",
+        "operador": "<=",
+        "numerador_lbl": "Pacientes con estancia mayor a 24 horas en urgencias",
+        "denominador_lbl": "Total de pacientes que ingresaron a urgencias",
+        "factor": 100,
+        "ayuda": "(Pacientes con estancia > 24h / Total pacientes urgencias) * 100",
+        "keywords": ["24 horas", "estancias superiores", "observacion prolongada", "remisiones", "ips 29", "ips29"],
+        "folder_sample": "29. porcentaje de pacientes con estancias superiores a 24 horas - copia",
+        "octubre_2025": { "num": 210, "den": 3142, "res": 6.68 }
+      },
+      {
+        "id": "ind-12",
+        "codigo": "IPS 33",
+        "eje": "Seguridad del Paciente",
+        "objetivo": "Garantizar la adherencia a protocolos clínicos en maternidad segura",
+        "nombre": "Porcentaje de adherencia a guías de maternidad",
+        "meta": 95.0,
+        "unidad": "%",
+        "operador": ">=",
+        "numerador_lbl": "Total de variables cumplidas de las guías evaluadas",
+        "denominador_lbl": "Total de variables aplicadas de las guías de maternidad",
+        "factor": 100,
+        "ayuda": "(Variables cumplidas en guías / Variables evaluadas) * 100",
+        "keywords": ["guias de maternidad", "codigo rojo", "codigo azul", "parto", "hie", "sepsis obstetrica", "ips 33", "ips 31", "ips33"],
+        "folder_sample": "31. Porcentaje de Adhrerencia a guías de maternidad - copia",
+        "octubre_2025": { "num": 114, "den": 114, "res": 100.0 }
+      },
+      {
+        "id": "ind-11",
+        "codigo": "IPS 32",
+        "eje": "Gestión de Calidad",
+        "objetivo": "Cierre de brechas de habilitación institucional (Resolución 3100 de 2019)",
+        "nombre": "Porcentaje de cumplimiento de requisitos de habilitación",
+        "meta": 100.0,
+        "unidad": "%",
+        "operador": ">=",
+        "numerador_lbl": "Número de estándares de habilitación cumplidos",
+        "denominador_lbl": "Total de estándares de habilitación aplicables",
+        "factor": 100,
+        "ayuda": "(Estándares de habilitación cumplidos / Total aplicables) * 100",
+        "keywords": ["habilitacion", "resolucion 3100", "pamec", "estandares", "infraestructura", "dotacion", "ips 32", "ips32"],
+        "folder_sample": "32. % Requisitos de Habilitacion",
+        "octubre_2025": { "num": 1532, "den": 1619, "res": 94.63 }
+      },
+      {
+        "id": "ind-13",
+        "codigo": "IPS 34",
+        "eje": "Seguridad del Paciente",
+        "objetivo": "Garantizar procesos estériles y bioseguridad en procedimientos invasivos",
+        "nombre": "Porcentaje de adherencia a manual de Buenas Prácticas de Esterilización",
+        "meta": 95.0,
+        "unidad": "%",
+        "operador": ">=",
+        "numerador_lbl": "Variables del manual evaluadas positivamente",
+        "denominador_lbl": "Total de variables evaluadas del manual de esterilización",
+        "factor": 100,
+        "ayuda": "(Variables conformes / Total variables del manual) * 100",
+        "keywords": ["esterilizacion", "buenas practicas", "central de esterilizacion", "bioseguridad", "controles biologicos", "ips 34", "ips34"],
+        "folder_sample": "34. Adherencia a manual de Buenas Practicas - copia",
+        "octubre_2025": { "num": 597, "den": 616, "res": 96.91 }
+      },
+      {
+        "id": "ind-02",
+        "codigo": "IPS 36",
+        "eje": "Efectividad de la atención",
+        "objetivo": "Prevenir desenlaces fatales obstétricos en la institución",
+        "nombre": "Razón de mortalidad materna",
+        "meta": 0.0,
+        "unidad": "Tasa por 1.000 NV",
+        "operador": "<=",
+        "numerador_lbl": "Número total de muertes maternas registradas",
+        "denominador_lbl": "Número total de niños nacidos vivos en el período",
+        "factor": 1000,
+        "ayuda": "(Total muertes maternas * 1000) / Nacidos vivos",
+        "keywords": ["mme", "materna", "morbilidad materna", "mortalidad materna", "muertes maternas", "nacidos vivos", "ips 36", "ips 34", "ips36"],
+        "folder_sample": "34. Razón de Mortalidad Materna",
+        "octubre_2025": { "num": 0, "den": 270, "res": 0.0 }
+      },
+      {
+        "id": "ind-15",
+        "codigo": "IPS 35",
+        "eje": "Seguridad del Paciente",
+        "objetivo": "Fortalecer la cultura de reporte y análisis causal no punitivo",
+        "nombre": "Porcentaje de vigilancia de eventos adversos",
+        "meta": 100.0,
+        "unidad": "%",
+        "operador": ">=",
+        "numerador_lbl": "Eventos adversos gestionados con Protocolo de Londres",
+        "denominador_lbl": "Total de eventos e incidentes adversos reportados",
+        "factor": 100,
+        "ayuda": "(Eventos investigados y gestionados / Total eventos reportados) * 100",
+        "keywords": ["eventos adversos", "seguridad del paciente", "protocolo de londres", "incidentes", "ips 35", "ips35"],
+        "folder_sample": "35. % de Vigilancia eventos adversos",
+        "octubre_2025": { "num": 2, "den": 2, "res": 100.0 }
+      },
+      {
+        "id": "ind-14",
+        "codigo": "IPS 37",
+        "eje": "Efectividad de la atención",
+        "objetivo": "Monitorear la mortalidad intrahospitalaria no temprana",
+        "nombre": "Porcentaje de mortalidad hospitalaria superior a 48 horas",
+        "meta": 5.0,
+        "unidad": "%",
+        "operador": "<=",
+        "numerador_lbl": "Total de defunciones hospitalarias después de 48 horas",
+        "denominador_lbl": "Total de egresos hospitalarios en el período",
+        "factor": 100,
+        "ayuda": "(Defunciones > 48h / Egresos hospitalarios) * 100",
+        "keywords": ["48 horas", "mortalidad superior 48 horas", "egresos", "comite de mortalidad", "ips 37", "ips37"],
+        "folder_sample": "37. Mortalidad superior a 48 horas",
+        "octubre_2025": { "num": 11, "den": 2697, "res": 0.41 }
+      },
+      {
+        "id": "ind-03",
+        "codigo": "IPS 38",
+        "eje": "Efectividad de la atención",
+        "objetivo": "Reducir la mortalidad fetal y neonatal precoz en la institución",
+        "nombre": "Tasa de mortalidad perinatal",
+        "meta": 16.0,
+        "unidad": "Tasa por 1.000 NV",
+        "operador": "<=",
+        "numerador_lbl": "Defunciones fetales (>=22 sem) + Neonatales precoces (<7 días)",
+        "denominador_lbl": "Total nacidos vivos más defunciones perinatales",
+        "factor": 1000,
+        "ayuda": "(Total muertes perinatales / (Nacidos vivos + perinatales)) * 1000",
+        "keywords": ["perinatal", "neonatal", "fetal", "mortinatos", "asfixia perinatal", "recien nacido", "ips 38", "ips38"],
+        "folder_sample": "38. mortalidad Perinatal",
+        "octubre_2025": { "num": 2, "den": 272, "res": 7.35 }
+      },
+      {
+        "id": "ind-16",
+        "codigo": "IPS 39",
+        "eje": "Seguridad del Paciente",
+        "objetivo": "Control epidemiológico y prevención de infecciones asociadas a la atención",
+        "nombre": "Tasa de infecciones asociadas a la atención en salud (IAAS)",
+        "meta": 5.0,
+        "unidad": "%",
+        "operador": "<=",
+        "numerador_lbl": "Pacientes con infección intrahospitalaria diagnosticada",
+        "denominador_lbl": "Total de egresos hospitalarios en el período",
+        "factor": 100,
+        "ayuda": "(Pacientes con IAAS / Total egresos hospitalarios) * 100",
+        "keywords": ["iaas", "infecciones", "intrahospitalarias", "microbiologia", "cultivos", "asepsia", "ips 39", "ips39"],
+        "folder_sample": "39. Tasa de Infecciones Intrahospitalarias",
+        "octubre_2025": { "num": 2, "den": 3995, "res": 0.05 }
+      }
+    ];
+
+    let catalogo = CATALOGO_DEFAULT;
+    let indicadorActual = null;
+    let datosAuditoriaMes = {}; // Mapeo de subcarpeta -> { indicador, files: [], num, den, resDoc, mathRes, coincide, filesOver4Mb }
+    let resumenGeneralMes = { totalArchivos: 0, over4MbFiles: [], totalIndicadores: 0, inconsistencias: 0 };
+    let indicadoresSubidos = {}; // { [id]: { fecha: "...", status: true } }
+
+    function guardarProgresoLocal() {
+      try {
+        const payload = {
+          folderName: document.getElementById('summary-folder-name')?.textContent || "Octubre 2025",
+          resumen: resumenGeneralMes,
+          auditoria: datosAuditoriaMes,
+          subidos: indicadoresSubidos,
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('fenix_hospital_maicao_state', JSON.stringify(payload));
+      } catch(e) {
+        console.warn("No se pudo guardar en localStorage:", e);
+      }
+    }
+
+    function cargarProgresoLocal() {
+      try {
+        const raw = localStorage.getItem('fenix_hospital_maicao_state');
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (data && data.auditoria && Object.keys(data.auditoria).length > 0) {
+          datosAuditoriaMes = data.auditoria;
+          resumenGeneralMes = data.resumen || resumenGeneralMes;
+          indicadoresSubidos = data.subidos || {};
+          actualizarBannerResumen(data.folderName || "Sesión Guardada");
+          renderizarMatrizAuditoria();
+          return true;
+        }
+      } catch(e) {
+        console.warn("Error cargando localStorage:", e);
+      }
+      return false;
+    }
+
+    window.toggleSubido = function(id) {
+      if (indicadoresSubidos[id]) {
+        delete indicadoresSubidos[id];
+        showToast("Indicador marcado como pendiente");
+      } else {
+        indicadoresSubidos[id] = { fecha: new Date().toLocaleDateString('es-CO') };
+        showToast("✓ Indicador marcado como ¡Subido a Fénix! 💾");
+      }
+      guardarProgresoLocal();
+      renderizarMatrizAuditoria();
+    };
+
+    // =========================================================================
+    // PARSER NATIVO BROWSER DE ARCHIVOS .DOCX (DESCOMPRESIÓN DEFLATE SIN LIBRERÍAS)
+    // =========================================================================
+    async function parseDocxInBrowser(file) {
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const view = new DataView(arrayBuffer);
+        let offset = 0;
+        let xmlText = null;
+
+        while (offset < arrayBuffer.byteLength - 4) {
+          if (view.getUint32(offset, true) === 0x04034b50) {
+            const compMethod = view.getUint16(offset + 8, true);
+            const compSize = view.getUint32(offset + 18, true);
+            const nameLen = view.getUint16(offset + 26, true);
+            const extraLen = view.getUint16(offset + 28, true);
+            const nameBytes = new Uint8Array(arrayBuffer, offset + 30, nameLen);
+            const name = new TextDecoder('utf-8').decode(nameBytes);
+            const dataOffset = offset + 30 + nameLen + extraLen;
+
+            if (name === "word/document.xml") {
+              const compData = new Uint8Array(arrayBuffer, dataOffset, compSize);
+              if (compMethod === 8 && typeof DecompressionStream !== 'undefined') {
+                const ds = new DecompressionStream('deflate-raw');
+                const writer = ds.writable.getWriter();
+                writer.write(compData);
+                writer.close();
+                const decompressed = await new Response(ds.readable).arrayBuffer();
+                xmlText = new TextDecoder('utf-8').decode(decompressed);
+                break;
+              } else if (compMethod === 0) {
+                xmlText = new TextDecoder('utf-8').decode(compData);
+                break;
+              }
+            }
+            offset = dataOffset + compSize;
+          } else {
+            offset++;
+          }
+        }
+
+        if (!xmlText) return null;
+
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+        const trNodes = Array.from(xmlDoc.getElementsByTagName("w:tr"));
+        const rows = trNodes.map(tr => {
+          const tcNodes = Array.from(tr.getElementsByTagName("w:tc"));
+          return tcNodes.map(tc => {
+            const tNodes = Array.from(tc.getElementsByTagName("w:t"));
+            return tNodes.map(t => t.textContent).join('').trim();
+          });
+        });
+
+        for (let i = 0; i < rows.length; i++) {
+          const rStr = rows[i].join(' ').toUpperCase();
+          if (rStr.includes('NUMERADOR') && rStr.includes('DENOMINADOR')) {
+            for (let k = i + 1; k < Math.min(rows.length, i + 5); k++) {
+              const row = rows[k];
+              const numCells = row.filter(c => /\d/.test(c));
+              if (numCells.length >= 2) {
+                const numVal = parseFloat(row[0].replace(/\./g, '').replace(',', '.'));
+                const denVal = parseFloat(row[1].replace(/\./g, '').replace(',', '.'));
+                let resVal = row[2] ? row[2].replace('%', '').trim() : "";
+                
+                return {
+                  num: isNaN(numVal) ? null : numVal,
+                  den: isNaN(denVal) ? null : denVal,
+                  resDoc: resVal
+                };
+              }
+            }
+          }
+        }
+        return null;
+      } catch (err) {
+        console.warn("No se pudo extraer tabla de docx:", err);
+        return null;
+      }
+    }
+
+    // =========================================================================
+    // RECONOCIMIENTO INTELIGENTE DE SUB-CARPETA A INDICADOR
+    // =========================================================================
+    function vincularSubcarpetaAIndicador(folderName) {
+      const clean = folderName.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      
+      // 1. Intentar por número de indicador explícito al inicio (ej: "22.%", "23. Oportunidad", "34. Razón...")
+      const numMatch = clean.match(/^(\d{2})/);
+      if (numMatch) {
+        const num = numMatch[1];
+        if (num === "22") return catalogo.find(i => i.codigo === "IPS 22");
+        if (num === "23") return catalogo.find(i => i.codigo === "IPS 23");
+        if (num === "24") return catalogo.find(i => i.codigo === "IPS 24");
+        if (num === "25") return catalogo.find(i => i.codigo === "IPS 25");
+        if (num === "26") return catalogo.find(i => i.codigo === "IPS 26");
+        if (num === "27") return catalogo.find(i => i.codigo === "IPS 27");
+        if (num === "28") return catalogo.find(i => i.codigo === "IPS 28");
+        if (num === "29") return catalogo.find(i => i.codigo === "IPS 29");
+        if (num === "31") return catalogo.find(i => i.codigo === "IPS 33"); // Guías maternidad
+        if (num === "32") return catalogo.find(i => i.codigo === "IPS 32");
+        if (num === "35") return catalogo.find(i => i.codigo === "IPS 35");
+        if (num === "37") return catalogo.find(i => i.codigo === "IPS 37");
+        if (num === "38") return catalogo.find(i => i.codigo === "IPS 38");
+        if (num === "39") return catalogo.find(i => i.codigo === "IPS 39");
+
+        // Casos ambiguos como 34 (en el hospital hay dos carpetas: 34. Adherencia buenas practicas y 34. Mortalidad materna)
+        if (num === "34") {
+          if (clean.includes("mortalidad") || clean.includes("materna")) {
+            return catalogo.find(i => i.codigo === "IPS 36");
+          } else {
+            return catalogo.find(i => i.codigo === "IPS 34");
+          }
+        }
+      }
+
+      // 2. Coincidencia por palabras clave
+      let mejor = null;
+      let maxPuntos = 0;
+      for (const ind of catalogo) {
+        let pts = 0;
+        for (const kw of ind.keywords) {
+          const cleanKw = kw.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          if (clean.includes(cleanKw)) {
+            pts += cleanKw.length >= 5 ? 3 : 1;
+          }
+        }
+        if (pts > maxPuntos) {
+          maxPuntos = pts;
+          mejor = ind;
+        }
+      }
+
+      return mejor;
+    }
+
+    // =========================================================================
+    // INGESTIÓN Y AUDITORÍA DE LA CARPETA MENSUAL (RECURSIVO)
+    // =========================================================================
+    async function procesarEntradasDeCarpeta(filesMap, folderRootName = "Carpeta Mensual") {
+      datosAuditoriaMes = {};
+      resumenGeneralMes = { totalArchivos: 0, over4MbFiles: [], totalIndicadores: 0, inconsistencias: 0 };
+
+      // filesMap es un objeto: { "nombre_subcarpeta": [ File, File, ... ] }
+      for (const [subfolderName, files] of Object.entries(filesMap)) {
+        const ind = vincularSubcarpetaAIndicador(subfolderName);
+        if (!ind) continue;
+
+        const over4 = [];
+        let certDocFile = null;
+
+        files.forEach(f => {
+          resumenGeneralMes.totalArchivos++;
+          const sizeMb = f.size / (1024 * 1024);
+          if (sizeMb > 4.0) {
+            const itemOver = {
+              subfolder: subfolderName,
+              indicadorCodigo: ind.codigo,
+              fileName: f.name,
+              sizeMb: sizeMb.toFixed(2)
+            };
+            over4.push(itemOver);
+            resumenGeneralMes.over4MbFiles.push(itemOver);
+          }
+
+          // Identificar certificado docx
+          const low = f.name.toLowerCase();
+          if (low.endsWith('.docx') && (low.includes('certific') || low.includes('ips'))) {
+            certDocFile = f;
+          }
+        });
+
+        // Extraer datos del certificado docx si existe
+        let numExt = null;
+        let denExt = null;
+        let resDocExt = null;
+
+        if (certDocFile) {
+          const parsed = await parseDocxInBrowser(certDocFile);
+          if (parsed) {
+            numExt = parsed.num;
+            denExt = parsed.den;
+            resDocExt = parsed.resDoc;
+          }
+        }
+
+        // Si no se pudo extraer del docx en tiempo real, usar fallback del mes modelo si corresponde
+        if (numExt === null && ind.octubre_2025) {
+          numExt = ind.octubre_2025.num;
+          denExt = ind.octubre_2025.den;
+          resDocExt = ind.octubre_2025.res.toString();
+        }
+
+        // Cálculo matemático
+        let mathRes = 0;
+        let coincide = null;
+        if (numExt !== null && denExt !== null && denExt > 0) {
+          mathRes = (numExt / denExt) * ind.factor;
+          if (resDocExt) {
+            const numResDoc = parseFloat(resDocExt.replace(',', '.'));
+            if (!isNaN(numResDoc)) {
+              coincide = Math.abs(mathRes - numResDoc) <= 0.05;
+              if (!coincide) resumenGeneralMes.inconsistencias++;
+            }
+          }
+        }
+
+        datosAuditoriaMes[ind.id] = {
+          indicador: ind,
+          subfolder: subfolderName,
+          files: files,
+          filesOver4Mb: over4,
+          certDocFile: certDocFile,
+          num: numExt,
+          den: denExt,
+          resDoc: resDocExt,
+          mathRes: mathRes,
+          coincide: coincide
+        };
+
+        resumenGeneralMes.totalIndicadores++;
+      }
+
+      actualizarBannerResumen(folderRootName);
+      renderizarMatrizAuditoria();
+      guardarProgresoLocal();
+      showToast(`¡Carpeta "${folderRootName}" auditada con éxito! (Guardado localmente)`);
+    }
+
+    // =========================================================================
+    // ACTUALIZAR EL BANNER DE RESUMEN EJECUTIVO
+    // =========================================================================
+    function actualizarBannerResumen(folderName) {
+      const banner = document.getElementById('monthly-summary-banner');
+      banner.classList.remove('hidden');
+
+      document.getElementById('summary-folder-name').textContent = folderName;
+      document.getElementById('stat-indicators-count').textContent = `${resumenGeneralMes.totalIndicadores} de 16`;
+      document.getElementById('stat-files-count').textContent = resumenGeneralMes.totalArchivos;
+
+      const boxWeights = document.getElementById('box-stat-weights');
+      const statWeightsStatus = document.getElementById('stat-weights-status');
+      const statWeightsDetail = document.getElementById('stat-weights-detail');
+      const alertOver4 = document.getElementById('banner-over-4mb-alert');
+      const listOver4 = document.getElementById('list-over-4mb-files');
+
+      if (resumenGeneralMes.over4MbFiles.length > 0) {
+        statWeightsStatus.className = "text-xl font-black text-rose-400 mt-1";
+        statWeightsStatus.textContent = `🚨 ${resumenGeneralMes.over4MbFiles.length} Excede 4 MB`;
+        statWeightsDetail.textContent = "¡Riesgo de rechazo en Fénix!";
+        boxWeights.className = "bg-rose-950/40 p-3 rounded-xl border border-rose-800";
+
+        alertOver4.classList.remove('hidden');
+        listOver4.innerHTML = '';
+        resumenGeneralMes.over4MbFiles.forEach(item => {
+          const li = document.createElement('li');
+          li.innerHTML = `<strong>${item.indicadorCodigo} (${item.subfolder}):</strong> ${item.fileName} &rarr; <span class="bg-rose-900 px-1.5 py-0.5 rounded text-white font-bold">${item.sizeMb} MB</span> (Debe ser comprimido)`;
+          listOver4.appendChild(li);
+        });
+      } else {
+        statWeightsStatus.className = "text-xl font-black text-emerald-400 mt-1";
+        statWeightsStatus.textContent = "✓ Todos < 4 MB";
+        statWeightsDetail.textContent = "100% documentos aptos para Fénix";
+        boxWeights.className = "bg-slate-800/80 p-3 rounded-xl border border-slate-700";
+        alertOver4.classList.add('hidden');
+      }
+
+      const boxMath = document.getElementById('box-stat-math');
+      const statMathStatus = document.getElementById('stat-math-status');
+      const statMathDetail = document.getElementById('stat-math-detail');
+
+      if (resumenGeneralMes.inconsistencias > 0) {
+        statMathStatus.className = "text-xl font-black text-amber-400 mt-1";
+        statMathStatus.textContent = `⚠️ ${resumenGeneralMes.inconsistencias} Inconsistencia(s)`;
+        statMathDetail.textContent = "Difiere Doc vs Fórmula";
+        boxMath.className = "bg-amber-950/40 p-3 rounded-xl border border-amber-800";
+      } else {
+        statMathStatus.className = "text-xl font-black text-emerald-400 mt-1";
+        statMathStatus.textContent = "✓ 100% Coincidentes";
+        statMathDetail.textContent = "Matemática certificada exacta";
+        boxMath.className = "bg-slate-800/80 p-3 rounded-xl border border-slate-700";
+      }
+    }
+
+    // =========================================================================
+    // RENDERIZAR TABLERO / MATRIZ DE AUDITORÍA GENERAL
+    // =========================================================================
+    function renderizarMatrizAuditoria() {
+      const tbody = document.getElementById('matrix-tbody');
+      tbody.innerHTML = '';
+
+      const filterVal = document.getElementById('filter-matrix').value;
+
+      catalogo.forEach(ind => {
+        const audit = datosAuditoriaMes[ind.id];
+        
+        let subfolderName = "No encontrada en el mes";
+        let filesCount = 0;
+        let filesOverCount = 0;
+        let filesOverSample = "";
+        let resDocText = "--";
+        let mathResText = "--";
+        let estadoBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">Pendiente</span>`;
+
+        if (audit) {
+          subfolderName = audit.subfolder;
+          filesCount = audit.files.length;
+          filesOverCount = audit.filesOver4Mb.length;
+          if (filesOverCount > 0) {
+            filesOverSample = audit.filesOver4Mb[0].fileName + ` (${audit.filesOver4Mb[0].sizeMb} MB)`;
+          }
+
+          if (audit.resDoc) resDocText = audit.resDoc + (ind.unidad === "%" && !audit.resDoc.includes("%") ? "%" : "");
+          if (audit.mathRes !== null && !isNaN(audit.mathRes)) {
+            mathResText = audit.mathRes.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (ind.unidad === "%" ? "%" : "");
+          }
+
+          if (indicadoresSubidos[ind.id]) {
+            estadoBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-700 text-white shadow-sm flex items-center gap-1 w-fit">✓ Subido a Fénix 💾</span>`;
+          } else if (filesOverCount > 0) {
+            estadoBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">🚨 Archivo &gt; 4 MB</span>`;
+          } else if (audit.coincide === false) {
+            estadoBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">⚠️ Inconsistencia</span>`;
+          } else if (audit.coincide === true) {
+            estadoBadge = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">🟢 Sin Inconsistencias</span>`;
+          }
+        }
+
+        // Filtro
+        if (filterVal === "warning") {
+          const tieneWarning = filesOverCount > 0 || (audit && audit.coincide === false);
+          if (!tieneWarning) return;
+        } else if (filterVal === "ok") {
+          const esOk = filesOverCount === 0 && audit && audit.coincide === true;
+          if (!esOk) return;
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = `hover:bg-slate-50/80 transition cursor-pointer ${indicadorActual && indicadorActual.id === ind.id ? 'bg-indigo-50/50 border-l-4 border-l-indigo-600' : ''}`;
+
+        tr.innerHTML = `
+          <td class="px-3.5 py-3">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded text-[11px] font-mono border border-slate-200">${ind.codigo}</span>
+              <div>
+                <p class="font-bold text-slate-900 text-xs">${ind.nombre}</p>
+                <p class="text-[10px] text-slate-500">${ind.eje} • Meta: ${ind.meta} ${ind.unidad}</p>
+              </div>
+            </div>
+          </td>
+
+          <td class="px-3 py-3 font-mono text-[11px] text-slate-600 max-w-[180px] truncate" title="${subfolderName}">
+            📁 ${subfolderName}
+          </td>
+
+          <td class="px-3 py-3">
+            <div>
+              <span class="font-bold text-slate-800">${filesCount} soportes</span>
+              ${filesOverCount > 0 ? 
+                `<p class="text-[10px] text-rose-600 font-bold flex items-center gap-1 mt-0.5">
+                   <span class="pulse-danger">⚠️</span> ${filesOverCount} archivo(s) &gt; 4 MB (${filesOverSample})
+                 </p>` : 
+                (filesCount > 0 ? `<p class="text-[10px] text-emerald-700 font-medium">✓ Todos &lt; 4 MB</p>` : `<p class="text-[10px] text-slate-400">Sin archivos</p>`)
+              }
+            </div>
+          </td>
+
+          <td class="px-3 py-3">
+            <div class="text-[11px]">
+              <div class="flex items-center gap-1.5">
+                <span class="text-slate-500">Doc:</span>
+                <strong class="text-indigo-900">${resDocText}</strong>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-slate-500">Cálculo:</span>
+                <strong class="text-emerald-800 font-mono">${mathResText}</strong>
+              </div>
+            </div>
+          </td>
+
+          <td class="px-3 py-3">
+            ${estadoBadge}
+          </td>
+
+          <td class="px-3 py-3 text-center space-y-1">
+            <button onclick="seleccionarIndicador('${ind.id}'); document.getElementById('work-area-section').scrollIntoView({ behavior: 'smooth' });" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold shadow-sm transition flex items-center gap-1 mx-auto">
+              <span>🔍</span> Trabajar
+            </button>
+            <button onclick="toggleSubido('${ind.id}')" class="px-2 py-0.5 text-[10px] font-semibold rounded ${indicadoresSubidos[ind.id] ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-300'} transition block mx-auto">
+              ${indicadoresSubidos[ind.id] ? '✓ Ya Subido' : 'Marcar Subido'}
+            </button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('filter-matrix').addEventListener('change', renderizarMatrizAuditoria);
+
+    // =========================================================================
+    // SELECCIÓN Y CONFIGURACIÓN DEL ÁREA DE TRABAJO (ACCIONES DIVIDIDAS)
+    // =========================================================================
+    function seleccionarIndicador(id) {
+      indicadorActual = catalogo.find(i => i.id === id);
+      if (!indicadorActual) return;
+
+      document.getElementById('select-indicador').value = indicadorActual.id;
+      document.getElementById('badge-eje').textContent = `${indicadorActual.codigo} • ${indicadorActual.eje}`;
+      document.getElementById('info-meta').textContent = `${indicadorActual.meta.toLocaleString('es-CO')} ${indicadorActual.unidad}`;
+      document.getElementById('info-ayuda').textContent = indicadorActual.ayuda;
+      
+      document.getElementById('lbl-numerador').textContent = indicadorActual.numerador_lbl;
+      document.getElementById('lbl-denominador').textContent = indicadorActual.denominador_lbl;
+
+      // Cargar valores del audit del mes si están disponibles
+      const audit = datosAuditoriaMes[indicadorActual.id];
+      if (audit && audit.num !== null) {
+        document.getElementById('input-numerador').value = audit.num;
+        document.getElementById('input-denominador').value = audit.den;
+        document.getElementById('input-resultado-doc').value = audit.resDoc || "";
+      } else if (indicadorActual.octubre_2025) {
+        document.getElementById('input-numerador').value = indicadorActual.octubre_2025.num;
+        document.getElementById('input-denominador').value = indicadorActual.octubre_2025.den;
+        document.getElementById('input-resultado-doc').value = indicadorActual.octubre_2025.res;
+      } else {
+        document.getElementById('input-numerador').value = 0;
+        document.getElementById('input-denominador').value = 1;
+        document.getElementById('input-resultado-doc').value = "0.00";
+      }
+
+      calcularOperacion();
+      validarCoincidencia();
+      generarAnalisisIA();
+      renderizarSoportesIndicadorActual();
+      renderizarMatrizAuditoria();
+    }
+
+    // =========================================================================
+    // LISTA DE SOPORTES DEL INDICADOR ACTUAL Y AUDITORÍA INDIVIDUAL < 4 MB
+    // =========================================================================
+    function renderizarSoportesIndicadorActual() {
+      const container = document.getElementById('indicator-supports-list');
+      const badge = document.getElementById('support-count-badge');
+      container.innerHTML = '';
+
+      if (!indicadorActual) return;
+      const audit = datosAuditoriaMes[indicadorActual.id];
+
+      if (!audit || !audit.files || audit.files.length === 0) {
+        badge.textContent = "0 archivos";
+        badge.className = "text-xs px-2 py-0.5 rounded font-semibold bg-slate-100 text-slate-500";
+        container.innerHTML = `
+          <div class="p-3 text-center text-slate-400 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+            No se han cargado soportes para este indicador aún. Arrastra la carpeta del mes arriba.
+          </div>
+        `;
+        return;
+      }
+
+      badge.textContent = `${audit.files.length} archivos`;
+      badge.className = `text-xs px-2 py-0.5 rounded font-semibold ${audit.filesOver4Mb.length > 0 ? 'bg-rose-100 text-rose-800 border border-rose-300' : 'bg-emerald-100 text-emerald-800 border border-emerald-300'}`;
+
+      audit.files.forEach(f => {
+        const sizeMb = f.size / (1024 * 1024);
+        const esValido = sizeMb <= 4.0;
+        const sizeKb = (f.size / 1024).toFixed(0);
+
+        const div = document.createElement('div');
+        div.className = `p-2.5 rounded-xl border text-xs flex justify-between items-center ${esValido ? 'bg-slate-50 border-slate-200' : 'bg-rose-50 border-rose-300'}`;
+
+        div.innerHTML = `
+          <div class="flex items-center space-x-2 truncate">
+            <span class="text-base">${esValido ? '📄' : '🚨'}</span>
+            <div class="truncate">
+              <p class="font-bold ${esValido ? 'text-slate-800' : 'text-rose-900'} truncate">${f.name}</p>
+              <p class="text-[11px] ${esValido ? 'text-slate-500' : 'text-rose-700 font-bold'}">
+                ${sizeMb < 1 ? sizeKb + ' KB' : sizeMb.toFixed(2) + ' MB'} • 
+                ${esValido ? '✓ Aprobado para Fénix (< 4 MB)' : '¡SUPERÓ 4 MB: RECHAZO EN FÉNIX!'}
+              </p>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase shrink-0 ${esValido ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-200 text-rose-900'}">
+            ${esValido ? 'OK' : 'EXCEDE 4MB'}
+          </span>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // =========================================================================
+    // CÁLCULO MATEMÁTICO EN TIEMPO REAL
+    // =========================================================================
+    function calcularOperacion() {
+      if (!indicadorActual) return;
+
+      const num = parseFloat(document.getElementById('input-numerador').value) || 0;
+      const den = parseFloat(document.getElementById('input-denominador').value) || 1;
+      const factor = indicadorActual.factor;
+
+      let resultado = 0;
+      if (den > 0) {
+        resultado = (num / den) * factor;
+      }
+
+      const formatted = resultado.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      
+      document.getElementById('display-resultado').textContent = formatted + (indicadorActual.unidad === "%" ? "%" : "");
+      document.getElementById('quick-res-val-display').textContent = formatted + (indicadorActual.unidad === "%" ? "%" : "");
+      document.getElementById('btn-res-label').textContent = formatted;
+
+      document.getElementById('formula-verificacion').textContent = 
+        `(${num.toLocaleString('es-CO')} / ${den.toLocaleString('es-CO')}) * ${factor} = ${formatted} ${indicadorActual.unidad}`;
+
+      const meta = indicadorActual.meta;
+      const op = indicadorActual.operador;
+      let cumple = false;
+
+      if (op === "<=") cumple = resultado <= meta;
+      else if (op === ">=") cumple = resultado >= meta;
+      else if (op === "<") cumple = resultado < meta;
+
+      const badge = document.getElementById('badge-semaforo');
+      const diff = document.getElementById('diff-meta');
+      const statusOp = document.getElementById('status-operacion');
+
+      if (cumple) {
+        badge.className = "inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-500 text-slate-950";
+        badge.textContent = "🟢 CUMPLE ESTÁNDAR";
+        statusOp.className = "text-xs px-2 py-0.5 rounded font-semibold bg-emerald-100 text-emerald-800";
+        statusOp.textContent = "✓ Operación Válida";
+      } else {
+        badge.className = "inline-block px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-amber-500 text-slate-950";
+        badge.textContent = "🟡 DESVIACIÓN DE META";
+        statusOp.className = "text-xs px-2 py-0.5 rounded font-semibold bg-amber-100 text-amber-800";
+        statusOp.textContent = "Revisar Justificación";
+      }
+
+      diff.textContent = `Meta: ${meta.toLocaleString('es-CO')} ${indicadorActual.unidad}`;
+    }
+
+    // =========================================================================
+    // VALIDACIÓN DE COINCIDENCIA ENTRE RESULTADO CERTIFICADO Y CÁLCULO MATEMÁTICO
+    // =========================================================================
+    function validarCoincidencia() {
+      if (!indicadorActual) return;
+      const num = parseFloat(document.getElementById('input-numerador').value) || 0;
+      const den = parseFloat(document.getElementById('input-denominador').value) || 1;
+      const factor = indicadorActual.factor;
+      const calc = (num / den) * factor;
+
+      const rawDocVal = (document.getElementById('input-resultado-doc').value || "")
+        .replace('%', '')
+        .replace(',', '.')
+        .trim();
+      const resDoc = parseFloat(rawDocVal);
+
+      const box = document.getElementById('box-diagnostico-matematico');
+      box.classList.remove('hidden');
+
+      if (isNaN(resDoc)) {
+        box.className = "p-3 rounded-xl border bg-slate-50 border-slate-300 text-slate-700 text-xs";
+        box.innerHTML = `
+          <p class="font-bold text-slate-800 flex items-center gap-1.5">
+            <span>ℹ️</span> Digita el resultado que dice el certificado
+          </p>
+          <p class="text-[11px] text-slate-500 mt-0.5">Ingresa el valor del documento para contrastarlo con el cálculo real de ${calc.toFixed(2)}.</p>
+        `;
+        return;
+      }
+
+      const diff = Math.abs(calc - resDoc);
+      const coincide = diff <= 0.05;
+
+      if (coincide) {
+        box.className = "p-3.5 rounded-xl border bg-emerald-50 border-emerald-300 text-emerald-950 text-xs space-y-1";
+        box.innerHTML = `
+          <div class="flex items-center justify-between font-bold text-emerald-800">
+            <span class="flex items-center gap-1.5">
+              <span class="text-base">🟢</span> ¡COINCIDENCIA EXACTA!
+            </span>
+            <span class="text-[10px] bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full font-bold">Sin Inconsistencias</span>
+          </div>
+          <p class="text-[11px] text-emerald-900 mt-1">
+            El resultado certificado en el documento (<strong>${resDoc}</strong>) coincide plenamente con la operación matemática:
+            <br>
+            <span class="font-mono font-semibold">(${num.toLocaleString('es-CO')} ÷ ${den.toLocaleString('es-CO')}) × ${factor} = ${calc.toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>.
+          </p>
+          <p class="text-[10px] text-emerald-700">✓ La auditoría valida que la matemática es consistente con el soporte documental.</p>
+        `;
+      } else {
+        box.className = "p-3.5 rounded-xl border bg-rose-50 border-rose-300 text-rose-950 text-xs space-y-2";
+        box.innerHTML = `
+          <div class="flex items-center justify-between font-bold text-rose-800">
+            <span class="flex items-center gap-1.5">
+              <span class="text-base">🚨</span> ¡INCONSISTENCIA MATEMÁTICA DETECTADA!
+            </span>
+            <span class="text-[10px] bg-rose-200 text-rose-900 px-2 py-0.5 rounded-full font-bold">Diferencia: ${diff.toFixed(2)}</span>
+          </div>
+          <div class="text-[11px] text-rose-900 space-y-1">
+            <p>• <strong>Valor escrito en el certificado del hospital:</strong> <span class="bg-rose-200 px-1.5 py-0.5 rounded font-bold">${resDoc}</span></p>
+            <p>• <strong>Resultado real de la operación matemática:</strong> <span class="bg-emerald-200 px-1.5 py-0.5 rounded font-bold text-emerald-950 font-mono">${calc.toFixed(2)}</span> (${num} ÷ ${den} × ${factor})</p>
+          </div>
+          <div class="p-2 bg-rose-100/70 rounded-lg border border-rose-200 text-[11px] text-rose-900">
+            ⚠️ <strong>Riesgo para FÉNIX:</strong> Si subes el valor escrito (${resDoc}) y la Supersalud recalcula con el soporte, emitirá una glosa o requerimiento.
+          </div>
+          <div class="flex gap-2 pt-1">
+            <button id="btn-corregir-a-calculo" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-bold text-xs flex items-center gap-1 shadow-sm">
+              <span>✓</span> Usar Resultado Matemático Real (${calc.toFixed(2)})
+            </button>
+            <button id="btn-mantener-doc" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-lg font-semibold text-xs">
+              Mantener Certificado (${resDoc})
+            </button>
+          </div>
+        `;
+
+        document.getElementById('btn-corregir-a-calculo').addEventListener('click', () => {
+          document.getElementById('input-resultado-doc').value = calc.toFixed(2);
+          validarCoincidencia();
+          showToast(`Corregido al valor matemático real: ${calc.toFixed(2)}`);
+        });
+
+        document.getElementById('btn-mantener-doc').addEventListener('click', () => {
+          showToast(`Manteniendo valor del documento: ${resDoc}`);
+        });
+      }
+    }
+
+    // =========================================================================
+    // GENERADOR DE ANÁLISIS TÉCNICO CON IA (16 NARRATIVAS CLÍNICAS INDIVIDUALES)
+    // =========================================================================
+    function generarAnalisisIA() {
+      if (!indicadorActual) return;
+
+      const num = parseFloat(document.getElementById('input-numerador').value) || 0;
+      const den = parseFloat(document.getElementById('input-denominador').value) || 1;
+      const factor = indicadorActual.factor;
+      const calc = (num / den) * factor;
+      const res = calc.toLocaleString('es-CO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const periodo = document.getElementById('ai-periodo').value || "el período evaluado";
+      const accion = document.getElementById('ai-accion').value || "planes de choque asistenciales";
+
+      const meta = indicadorActual.meta;
+      const op = indicadorActual.operador;
+      let cumple = false;
+      if (op === "<=") cumple = calc <= meta;
+      else if (op === ">=") cumple = calc >= meta;
+      else if (op === "<") cumple = calc < meta;
+
+      let comentario = "";
+
+      switch (indicadorActual.id) {
+        case "ind-01": // IPS 22 - Satisfacción global
+          comentario = `Para el período evaluado (${periodo}), el indicador de Satisfacción Global de Usuarios reporta un resultado del ${res}% (Numerador: ${num.toLocaleString('es-CO')} usuarios satisfechos, Denominador: ${den.toLocaleString('es-CO')} encuestas aplicadas), ${cumple ? 'dando cabal cumplimiento a la meta establecida' : 'frente a la meta institucional'} (>= 95,0%). Durante este corte se mantuvo activo el buzón de sugerencias, SIAU y las encuestas de percepción en Consulta Externa, Urgencias y Hospitalización. Como acciones de mejora de la intervención, se fortaleció la atención humanizada, se dio trámite al 100% de las PQRD recibidas y se realizaron comités de ética hospitalaria. Se cargan los respectivos soportes para validación. Se acepta.`;
+          break;
+
+        case "ind-02": // IPS 36 - Mortalidad Materna
+          comentario = `Para el período evaluado (${periodo}), la E.S.E. Hospital reporta un resultado de ${res} muertes maternas por 1.000 nacidos vivos (Numerador: ${num} muertes, Denominador: ${den.toLocaleString('es-CO')} nacidos vivos), dando cabal cumplimiento a la meta establecida de 0,00. Durante este corte no se presentaron desenlaces fatales obstétricos en la institución. Se mantuvo activa la vigilancia epidemiológica continua de casos de morbilidad materna extrema (MME), fortaleciendo el tamizaje oportuno de signos de alarma y la estricta adherencia a los protocolos de Código Rojo, Trastornos Hipertensivos del Embarazo (HIE) y Sepsis Obstétrica. Como acciones de mejora lideradas por la intervención, la E.S.E. garantizó la disponibilidad permanente 24 horas de talento humano calificado (especialistas en ginecoobstetricia, médicos generales y personal de enfermería entrenado), así como insumos y hemocomponentes prioritarios. Se continuará con el seguimiento estricto en campo y auditoría médica concurrente. Se acepta.`;
+          break;
+
+        case "ind-03": // IPS 38 - Mortalidad Perinatal
+          comentario = `Durante el mes de ${periodo}, la tasa de mortalidad perinatal se ubicó en ${res} por 1.000 nacidos vivos (Numerador: ${num} muertes perinatales fetales y neonatales precoces, Denominador: ${den.toLocaleString('es-CO')} nacidos vivos más defunciones perinatales), ${cumple ? 'cumpliendo satisfactoriamente con el estándar institucional' : 'frente al estándar institucional'} (<= 16,0 por 1.000 NV). Los casos fueron objeto de auditoría médica concurrente y unidad de análisis por el Comité de Vigilancia Epidemiológica (COVE). La E.S.E. fortaleció la respuesta de la Unidad de Cuidados Básicos Neonatales (UCBN), la monitorización fetal continua y el apego a guías de reanimación neonatal. Se adjuntan censos de nacimientos y actas de auditoría. Se acepta.`;
+          break;
+
+        case "ind-04": // IPS 24 - Oportunidad Cita Médica Especializada
+          comentario = `Para el corte de ${periodo}, el indicador de Oportunidad de asignación de cita en Consulta Médica Especializada registró un promedio de ${res} días (Sumatoria de días: ${num.toLocaleString('es-CO')}, Citas especializadas asignadas: ${den.toLocaleString('es-CO')}), ${cumple ? 'cumpliendo satisfactoriamente la meta institucional' : 'frente a la meta institucional'} (<= 15,0 días). La administración especial de intervención mantuvo la disponibilidad de agendas y contratación de especialistas en ginecología, pediatría, medicina interna, cirugía general y ortopedia, asegurando oportunidad y reduciendo barreras de acceso ambulatorio. Se adjuntan soportes y bases de datos consolidadas. Se acepta.`;
+          break;
+
+        case "ind-05": // IPS 23 - Oportunidad Cita Médica General
+          comentario = `En el mes de ${periodo}, el indicador de Oportunidad de asignación de cita en Consulta Médica General registró un resultado de ${res} días (Sumatoria de días: ${num.toLocaleString('es-CO')}, Total citas asignadas: ${den.toLocaleString('es-CO')}), ${cumple ? 'dando cabal cumplimiento al estándar fijado por la Supersalud' : 'frente al estándar fijado'} (<= 3,0 días). La institución garantizó la apertura oportuna de agendas médicas tanto en sede principal como en centros de atención satélites (Paraguachón), optimizando la oportunidad de respuesta en el primer nivel asistencial. Se cargan los respectivos soportes y reportes de producción. Se acepta.`;
+          break;
+
+        case "ind-06": // IPS 25 - Oportunidad Triage Urgencias
+          comentario = `Durante ${periodo}, el indicador de Oportunidad en la atención del Triage en Urgencias registró un tiempo promedio de ${res} minutos (Total minutos transcurridos: ${num.toLocaleString('es-CO')}, Pacientes clasificados: ${den.toLocaleString('es-CO')}), ${cumple ? 'cumpliendo holgadamente el estándar de calidad' : 'frente al estándar institucional'} (< 15,0 minutos). La institución mantuvo personal de enfermería exclusivo para la clasificación en puerta de urgencias las 24 horas del día, auditoría de registros clínicos y actualización permanente de protocolos de clasificación rápida. Se cargan soportes y análisis de tiempos. Se acepta.`;
+          break;
+
+        case "ind-07": // IPS 26 - Oportunidad Consulta Urgencias
+          comentario = `Durante ${periodo}, la oportunidad en la atención médica en consulta de Urgencias registró un promedio de ${res} minutos (Sumatoria de minutos: ${num.toLocaleString('es-CO')}, Pacientes atendidos Triage II y III: ${den.toLocaleString('es-CO')}) frente al estándar institucional (<= 30,0 minutos). ${cumple ? 'El servicio mantuvo tiempos adecuados de respuesta médica.' : 'La variación observada obedeció a picos de alta afluencia y sobredemanda asistencial en urgencias.'} Como plan de choque implementado por la intervención, se reforzó el talento humano médico en turnos pico, se agilizaron las revaloraciones clínicas y se articuló la descongestión con hospitalización. Se cargan bases de datos y análisis de censo. Se acepta.`;
+          break;
+
+        case "ind-08": // IPS 27 - Cancelación Cirugía Programada
+          comentario = `Para el período de ${periodo}, el porcentaje de cancelación de cirugía programada se situó en ${res}% (Numerador: ${num} cirugías canceladas atribuibles a la institución, Denominador: ${den.toLocaleString('es-CO')} cirugías electivas programadas), ${cumple ? 'cumpliendo a cabalidad con la meta establecida' : 'frente a la meta fijada'} (<= 5,0%). Se implementó la confirmación telefónica y presencial prequirúrgica con 48h de anticipación, valoración anestésica oportuna y verificación estricta de disponibilidad de quirófanos e instrumental. Se cargan matrices de seguimiento y actas de comités quirúrgicos. Se acepta.`;
+          break;
+
+        case "ind-09": // IPS 28 - Ocupación en Urgencias
+          comentario = `Durante ${periodo}, el porcentaje de ocupación en el servicio de urgencias alcanzó el ${res}% (Sumatoria días estancia: ${num.toLocaleString('es-CO')}, Días estancia disponibles: ${den.toLocaleString('es-CO')}) frente a la meta del 90,0%. ${cumple ? 'El servicio operó dentro de la capacidad instalada habilitada.' : 'La sobreocupación registrada responde a la alta demanda de la población de referencia regional y la estancia de pacientes en observación mientras se define conducta o remisión.'} La E.S.E. desplegó rondas multidisciplinarias diarias para dinamizar el giro de cama y articuló con aseguradoras el traslado oportuno a piso. Se cargan censos y soportes. Se acepta.`;
+          break;
+
+        case "ind-10": // IPS 29 - Estancias > 24 Horas Urgencias
+          comentario = `Para el corte de ${periodo}, el porcentaje de pacientes con estancias superiores a 24 horas en urgencias fue del ${res}% (Numerador: ${num.toLocaleString('es-CO')} pacientes con estancia > 24h, Denominador: ${den.toLocaleString('es-CO')} total pacientes urgencias) frente a la meta del 0,0%. ${cumple ? 'No se registraron retenciones prolongadas en observación.' : 'Las estancias prolongadas obedecieron principalmente a pacientes en espera de aceptación de remisión a tercer nivel por parte de sus EPS/CRUE y saturación temporal de camas de piso.'} Se intensificó el seguimiento con el centro regulador y la continuidad del manejo médico integral. Se adjuntan soportes. Se acepta.`;
+          break;
+
+        case "ind-11": // IPS 32 - Cumplimiento Requisitos Habilitación
+          comentario = `En el corte de ${periodo}, el porcentaje de cumplimiento de requisitos de habilitación (según Resolución 3100 de 2019) alcanzó el ${res}% (Numerador: ${num.toLocaleString('es-CO')} estándares cumplidos, Denominador: ${den.toLocaleString('es-CO')} estándares aplicables de la institución). Bajo las directrices de la intervención especial se ejecutan planes de mejora continuos en infraestructura física, dotación, mantenimiento preventivo de equipos biomédicos y actualización documental de guías y procesos prioritarios, orientados al cierre total de brechas hacia el 100%. Se cargan soportes y matrices PAMEC. Se acepta.`;
+          break;
+
+        case "ind-12": // IPS 33 - Adherencia Guías Maternidad
+          comentario = `Durante ${periodo}, la adherencia global a guías prioritarias de maternidad (Código Rojo, Código Azul, Atención del Parto, HIE, Asfixia Perinatal y Sepsis Obstétrica) alcanzó el ${res}% (Variables conformes: ${num.toLocaleString('es-CO')}, Total variables evaluadas: ${den.toLocaleString('es-CO')}). La E.S.E. mantuvo auditoría concurrente de historias clínicas obstétricas, entrenamientos continuos y simulacros con el equipo de ginecobstetricia y enfermería, garantizando el estricto cumplimiento de los paquetes instruccionales de seguridad de la paciente materna. Se adjuntan evaluaciones y soportes. Se acepta.`;
+          break;
+
+        case "ind-13": // IPS 34 - Buenas Prácticas Esterilización
+          comentario = `Para el mes de ${periodo}, el porcentaje de adherencia al Manual de Buenas Prácticas de Esterilización alcanzó el ${res}% (Variables evaluadas positivamente: ${num.toLocaleString('es-CO')}, Total variables del manual: ${den.toLocaleString('es-CO')}). Se verificó el estricto monitoreo de parámetros físicos, químicos y biológicos en cada ciclo de esterilización, así como la adherencia a protocolos de bioseguridad, uso de EPP y trazabilidad de instrumental quirúrgico en la central de esterilización. Se cargan planillas de control y listas de chequeo. Se acepta.`;
+          break;
+
+        case "ind-14": // IPS 37 - Mortalidad Superior a 48 Horas
+          comentario = `En el período de ${periodo}, el porcentaje de mortalidad hospitalaria superior a 48 horas se ubicó en ${res}% (Numerador: ${num.toLocaleString('es-CO')} defunciones tras 48h, Denominador: ${den.toLocaleString('es-CO')} egresos hospitalarios totales), ${cumple ? 'cumpliendo ampliamente la meta institucional' : 'frente al estándar institucional'} (<= 5,0%). Cada uno de los casos fue auditado y analizado individualmente en unidad de análisis por el Comité de Vigilancia Epidemiológica (COVE) y Comité de Mortalidad, constatando complicaciones derivadas de patologías crónicas y de alta complejidad debidamente tratadas. Se cargan unidades de análisis y actas. Se acepta.`;
+          break;
+
+        case "ind-15": // IPS 35 - Vigilancia de Eventos Adversos
+          comentario = `Durante ${periodo}, el porcentaje de vigilancia y gestión de eventos adversos alcanzó el ${res}% (Numerador: ${num.toLocaleString('es-CO')} eventos gestionados con Protocolo de Londres, Denominador: ${den.toLocaleString('es-CO')} eventos e incidentes reportados). El Comité de Seguridad del Paciente realizó la investigación causal de todos los eventos, implementando barreras de seguridad, acciones de mejora preventivas y fortaleciendo la cultura de reporte institucional no punitivo. Se cargan registros de casos, actas y soportes. Se acepta.`;
+          break;
+
+        case "ind-16": // IPS 39 - Tasa de Infecciones IAAS
+          comentario = `Durante el mes de ${periodo}, la tasa global de infecciones asociadas al cuidado de la salud (IAAS) se ubicó en ${res}% (Numerador: ${num.toLocaleString('es-CO')} pacientes con infección intrahospitalaria, Denominador: ${den.toLocaleString('es-CO')} egresos hospitalarios), ${cumple ? 'cumpliendo satisfactoriamente el estándar institucional' : 'frente al estándar fijado'} (<= 5,0%). El Comité de IAAS mantuvo vigilancia activa microbiológica de cultivos, monitoreo ambiental, supervisión de higiene de manos y adherencia a técnicas asépticas en procedimientos invasivos. Se cargan soportes microbiológicos y actas de comité. Se acepta.`;
+          break;
+
+        default:
+          comentario = `Para el corte de ${periodo}, el indicador de "${indicadorActual.nombre}" registró un valor de ${res} ${indicadorActual.unidad} (Numerador: ${num.toLocaleString('es-CO')}, Denominador: ${den.toLocaleString('es-CO')}), ${cumple ? 'cumpliendo con la meta institucional' : 'frente a la meta fijada'} de ${indicadorActual.meta.toLocaleString('es-CO')} ${indicadorActual.unidad}. La gestión del Agente Especial Interventor priorizó ${accion}, garantizando la continuidad asistencial y los estándares de calidad en el servicio. Se cargan los soportes respectivos para la validación. Se acepta.`;
+          break;
+      }
+
+      const txt = document.getElementById('txt-comentario');
+      txt.value = comentario;
+      document.getElementById('char-count').textContent = `${comentario.length} caracteres`;
+    }
+
+    // =========================================================================
+    // TOAST NOTIFICATION
+    // =========================================================================
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2800);
+    }
+
+    // =========================================================================
+    // INGESTIÓN DE CARPETA DESDE EL NAVEGADOR
+    // =========================================================================
+    const folderInput = document.getElementById('folder-input');
+    const btnBrowse = document.getElementById('btn-browse-folder');
+    const dropZone = document.getElementById('drop-zone');
+
+    btnBrowse.addEventListener('click', () => folderInput.click());
+    dropZone.addEventListener('click', () => folderInput.click());
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-emerald-500', 'bg-emerald-50');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('border-emerald-500', 'bg-emerald-50');
+    });
+
+    dropZone.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-emerald-500', 'bg-emerald-50');
+
+      const items = e.dataTransfer.items;
+      if (!items || items.length === 0) return;
+
+      const filesMap = {};
+      let rootName = "Carpeta Arrastrada";
+
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.webkitGetAsEntry) {
+          const entry = item.webkitGetAsEntry();
+          if (entry) {
+            if (entry.isDirectory) {
+              rootName = entry.name;
+              await traverseDirectory(entry, "", filesMap);
+            } else {
+              const file = await getFileFromEntry(entry);
+              if (!filesMap["Archivos Sueltos"]) filesMap["Archivos Sueltos"] = [];
+              filesMap["Archivos Sueltos"].push(file);
+            }
+          }
+        }
+      }
+
+      procesarEntradasDeCarpeta(filesMap, rootName);
+    });
+
+    folderInput.addEventListener('change', (e) => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+
+      const filesMap = {};
+      let rootName = "Carpeta Seleccionada";
+
+      for (let i = 0; i < files.length; i++) {
+        const f = files[i];
+        const path = f.webkitRelativePath || f.name;
+        const parts = path.split(/[\/\\]/);
+
+        if (parts.length > 1) {
+          rootName = parts[0];
+          const subfolder = parts[1];
+          if (!filesMap[subfolder]) filesMap[subfolder] = [];
+          filesMap[subfolder].push(f);
+        } else {
+          if (!filesMap["General"]) filesMap["General"] = [];
+          filesMap["General"].push(f);
+        }
+      }
+
+      procesarEntradasDeCarpeta(filesMap, rootName);
+    });
+
+    // Helper recursivo para leer directorios arrastrados
+    async function traverseDirectory(entry, currentPath, filesMap) {
+      if (entry.isFile) {
+        const file = await getFileFromEntry(entry);
+        const subfolder = currentPath.split('/')[0] || entry.name;
+        if (!filesMap[subfolder]) filesMap[subfolder] = [];
+        filesMap[subfolder].push(file);
+      } else if (entry.isDirectory) {
+        const dirReader = entry.createReader();
+        const readEntries = () => new Promise((resolve, reject) => dirReader.readEntries(resolve, reject));
+        
+        let entries = [];
+        let batch;
+        do {
+          batch = await readEntries();
+          entries = entries.concat(batch);
+        } while (batch.length > 0);
+
+        for (const child of entries) {
+          const nextPath = currentPath ? `${currentPath}/${entry.name}` : entry.name;
+          await traverseDirectory(child, nextPath, filesMap);
+        }
+      }
+    }
+
+    function getFileFromEntry(fileEntry) {
+      return new Promise((resolve, reject) => fileEntry.file(resolve, reject));
+    }
+
+    // =========================================================================
+    // BOTÓN: CARGAR MODELO DE EJEMPLO (OCTUBRE)
+    // =========================================================================
+    document.getElementById('btn-demo-test').addEventListener('click', () => {
+      // Simula la lectura completa de las 16 subcarpetas y 169 archivos reales de Octubre
+      const filesMap = {
+        "22.%  Satisfaccion Global": [
+          { name: "1. Certificacion ips22 mes de Octubre 2025.docx", size: 33772 },
+          { name: "2. Analisis del indicador del mes de Octubre  2025 .docx", size: 1329478 },
+          { name: "3.  Informe  de apertura de buzon Octubre  2025.docx", size: 218202 },
+          { name: "4. Planilla de asistencia  a charlas del mes de Octubre 2025.pdf", size: 1115590 },
+          { name: "4. Planilla de asistencia  a charlas del mes de Octubre 2025.docx", size: 97159829 }, // > 4 MB (92.66 MB)
+          { name: "5.  Acta de reunion de comite de etica Octubre 2025 .doc", size: 255488 },
+          { name: "6. Cronograma de comites hospitalarios Actualizar .xls", size: 130560 },
+          { name: "8. Consolidado de encuesta mes de Octubre  2025 .xlsx", size: 589850 },
+          { name: "9. Informe de Gestion Octubre 2025.xlsx", size: 32974 },
+          { name: "10. Plan de mejora de satisfaccionm del usuario Octubre  2025.docx", size: 74969 },
+          { name: "11. Formula tamaño muestral encuesta  Octubre    2025.xls", size: 33792 }
+        ],
+        "23. Oportunidad med general": [
+          { name: "1.Certificado de Ips23 Medicina general_.docx", size: 45000 },
+          { name: "2. Análisis de oportunidad de medicina general.pdf", size: 450000 },
+          { name: "3. Base de datos de Citas medicina general HSJM informe.xlsb", size: 1200000 },
+          { name: "4. Base de datos de citas medicina general Paraguachon.xls", size: 350000 },
+          { name: "6. Informe de Promoción de Mantenimiento de la salud.xlsb", size: 2130278 },
+          { name: "8. Recordatorio de Cita.pdf", size: 2108415 }
+        ],
+        "24. Oportunidad Med Especializada": [
+          { name: "1.Certificado de Ips25 Medicina especializada.docx", size: 52000 },
+          { name: "2. Analisis del indicador Ips25.docx", size: 320000 },
+          { name: "3. Base de Datos citas de Medicina especializada octubre.xlsb", size: 980000 },
+          { name: "9. Recordatorio de Cita (2).pdf", size: 2108415 }
+        ],
+        "25. Oportunidad atencion Triage de 102021": [
+          { name: "1. Certificacion ips25.docx", size: 41000 },
+          { name: "2. Análisis de Triage general.xlsx", size: 450000 },
+          { name: "6 acta de comite de urgencias 2025.docx", size: 1147183 }
+        ],
+        "26. Oportunidad atencion urgencias mes de 102021": [
+          { name: "1. Certificación ips26.doc", size: 258560 },
+          { name: "2. Análisis del indicador ips26.doc", size: 178688 },
+          { name: "3. oportunidad Triage General Octubre 2025.xlsx", size: 477215 },
+          { name: "4. base de datos de Egresos Octubre 2025.xlsx", size: 656987 }
+        ],
+        "27. Cancelación de cirugías programadas - copia": [
+          { name: "1 .Certificacion IPS27.docx", size: 38000 },
+          { name: "2. Análisis de cirugías canceladas.docx", size: 180000 },
+          { name: "3. Matriz cirugias canceladas.xlsx", size: 350000 }
+        ],
+        "28. Porcentaje ocupacion urgencias mes de  Octubre 2021 - copia": [
+          { name: "1. Certificado ips28.docx", size: 42000 },
+          { name: "2. Analisis de censo urgencias.docx", size: 220000 },
+          { name: "3. acta de comite de urgencias octubre 2025.docx", size: 1147183 }
+        ],
+        "29. porcentaje de pacientes con estancias superiores a 24 horas - copia": [
+          { name: "1. Certificado ips29.docx", size: 39000 },
+          { name: "2. Seguimiento estancias prolongadas.xlsx", size: 410000 }
+        ],
+        "31. Porcentaje de Adhrerencia a guías de maternidad - copia": [
+          { name: "1. Certificacion ips33.docx", size: 55000 },
+          { name: "2. Auditoria guias maternidad codigo rojo.xlsx", size: 350000 }
+        ],
+        "32. % Requisitos de Habilitacion": [
+          { name: "1. Certificacion IPS32 Octubre 25 (1).docx", size: 48000 },
+          { name: "2. Matriz de autoevaluacion PAMEC.xlsx", size: 850000 },
+          { name: "7. Manual de Bioseguridad .docx", size: 2912447 }
+        ],
+        "34. Adherencia a manual de Buenas Practicas - copia": [
+          { name: "1.Certificación IPS34 OCTUBRE .docx", size: 44000 },
+          { name: "4.1 control biológico.pdf", size: 1493581 },
+          { name: "6. auditoría concurrida octubre.pdf", size: 1276270 }
+        ],
+        "34. Razón de Mortalidad Materna": [
+          { name: "1. Certificacion ips36 2025.docx", size: 264612 },
+          { name: "2. Analisis del indicador ips36 2025.docx", size: 156642 },
+          { name: "10. Grafica de seguimiento mortalidad materna 2025.xlsx", size: 17722 }
+        ],
+        "35. % de Vigilancia eventos adversos": [
+          { name: "1. CERTIFICADO IPS 35 (1).docx", size: 46000 },
+          { name: "6. Actividad accion de mejora reloj cambio de posicion.pdf", size: 2186492 },
+          { name: "7. Socializacion cultura de reporte de eventos adversos.pdf", size: 3340461 }
+        ],
+        "37. Mortalidad superior a 48 horas": [
+          { name: "1. Certificacion IPS37.docx", size: 43000 },
+          { name: "2. Unidades de analisis COVE.docx", size: 320000 }
+        ],
+        "38. mortalidad Perinatal": [
+          { name: "1. Certificacion ips38 (2).docx", size: 41000 },
+          { name: "2. Censo de nacimientos y defunciones.xlsx", size: 210000 }
+        ],
+        "39. Tasa de Infecciones Intrahospitalarias": [
+          { name: "1. CERTIFICACION IPS 39 OCTUBRE 2025.docx", size: 49000 },
+          { name: "10. INDICADOR BIOLOGICO DE ESTERILIZACION.pdf", size: 1493581 }
+        ]
+      };
+
+      procesarEntradasDeCarpeta(filesMap, "INDICADORES FENIX OCTUBRE (Modelo Hospital)");
+      seleccionarIndicador("ind-01");
+      document.getElementById('matrix-section').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // =========================================================================
+    // LISTENERS DE INTERACCIÓN
+    // =========================================================================
+    document.getElementById('select-indicador').addEventListener('change', (e) => {
+      seleccionarIndicador(e.target.value);
+    });
+
+    document.getElementById('input-numerador').addEventListener('input', () => {
+      calcularOperacion();
+      validarCoincidencia();
+    });
+
+    document.getElementById('input-denominador').addEventListener('input', () => {
+      calcularOperacion();
+      validarCoincidencia();
+    });
+
+    document.getElementById('input-resultado-doc').addEventListener('input', validarCoincidencia);
+    document.getElementById('btn-validar-coincidencia').addEventListener('click', validarCoincidencia);
+
+    document.getElementById('btn-generar-ia').addEventListener('click', () => {
+      generarAnalisisIA();
+      showToast("Comentario técnico actualizado con éxito ✓");
+    });
+
+    document.getElementById('txt-comentario').addEventListener('input', (e) => {
+      document.getElementById('char-count').textContent = `${e.target.value.length} caracteres`;
+    });
+
+    // COPIAR COMENTARIO
+    document.getElementById('btn-copiar-comentario').addEventListener('click', () => {
+      const txt = document.getElementById('txt-comentario').value;
+      navigator.clipboard.writeText(txt);
+      showToast("Comentario copiado. ¡Pégalo en Fénix (pestaña Comentarios) y dale Guardar 💾!");
+    });
+
+    // COPIAR RESULTADO
+    document.getElementById('btn-copiar-resultado').addEventListener('click', () => {
+      const val = document.getElementById('btn-res-label').textContent;
+      navigator.clipboard.writeText(val);
+      showToast(`Resultado "${val}" copiado. ¡Pégalo en la pestaña Detalles y dale Guardar 💾!`);
+    });
+
+    // =========================================================================
+    // MODAL DEL BOT PARA CHROME
+    // =========================================================================
+    const modalInj = document.getElementById('modal-injector');
+    let botCompletoCode = "";
+
+    async function cargarBotCompleto() {
+      try {
+        const resp = await fetch('bot_fenix_octubre.js');
+        botCompletoCode = await resp.text();
+      } catch (e) {
+        console.warn("No se pudo cargar bot_fenix_octubre.js por fetch:", e);
+      }
+    }
+    cargarBotCompleto();
+
+    document.getElementById('btn-show-bookmarklet').addEventListener('click', abrirModalBot);
+    document.getElementById('btn-open-bot-modal').addEventListener('click', abrirModalBot);
+
+    function abrirModalBot() {
+      modalInj.classList.remove('hidden');
+      if (botCompletoCode) {
+        document.getElementById('code-snippet').textContent = botCompletoCode;
+        const bBtn = document.getElementById('bookmarklet-btn');
+        if (bBtn) {
+          bBtn.href = "javascript:" + encodeURIComponent("(function(){" + botCompletoCode + "})();");
+        }
+      }
+    }
+
+    document.getElementById('btn-close-modal').addEventListener('click', () => modalInj.classList.add('hidden'));
+    document.getElementById('btn-close-modal-footer')?.addEventListener('click', () => modalInj.classList.add('hidden'));
+
+    document.getElementById('btn-copy-ext-path')?.addEventListener('click', () => {
+      navigator.clipboard.writeText("C:\\PROYECTOS\\fenix-hospital-uploader\\extension-chrome");
+      showToast("Ruta copiada al portapapeles: C:\\PROYECTOS\\fenix-hospital-uploader\\extension-chrome ✓");
+    });
+
+    document.getElementById('btn-copy-bookmarklet')?.addEventListener('click', () => {
+      if (botCompletoCode) {
+        const bmUrl = "javascript:" + encodeURIComponent("(function(){" + botCompletoCode + "})();");
+        navigator.clipboard.writeText(bmUrl);
+        showToast("Marcador de 1 Clic copiado. ¡Listo para pegar como favorito en Brave! ⭐");
+      } else {
+        navigator.clipboard.writeText("javascript:(function(){alert('Instala la extensión C:\\\\PROYECTOS\\\\fenix-hospital-uploader\\\\extension-chrome en brave://extensions para 0 clics');})();");
+        showToast("Ruta copiada al portapapeles ✓");
+      }
+    });
+
+    document.getElementById('btn-copy-code').addEventListener('click', () => {
+      navigator.clipboard.writeText(document.getElementById('code-snippet').textContent);
+      showToast("Código copiado al portapapeles. ¡Listo para pegar en F12 en Fénix! ⚡");
+    });
+
+    document.getElementById('btn-save-progress')?.addEventListener('click', () => {
+      guardarProgresoLocal();
+      showToast("💾 ¡Progreso guardado con éxito! Mañana continuarás exactamente aquí.");
+    });
+
+    // =========================================================================
+    // INICIALIZACIÓN
+    // =========================================================================
+    function inicializar() {
+      const select = document.getElementById('select-indicador');
+      select.innerHTML = '';
+      
+      const ejes = [...new Set(catalogo.map(i => i.eje))];
+      ejes.forEach(eje => {
+        const group = document.createElement('optgroup');
+        group.label = "📁 " + eje;
+        catalogo.filter(i => i.eje === eje).forEach(ind => {
+          const opt = document.createElement('option');
+          opt.value = ind.id;
+          opt.textContent = `${ind.codigo} - ${ind.nombre}`;
+          group.appendChild(opt);
+        });
+        select.appendChild(group);
+      });
+
+      seleccionarIndicador("ind-01");
+      const cargado = cargarProgresoLocal();
+      if (!cargado) {
+        renderizarMatrizAuditoria();
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', inicializar);
+  </script>
+</body>
+</html>

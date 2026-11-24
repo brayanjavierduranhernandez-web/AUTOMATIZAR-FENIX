@@ -1,0 +1,14 @@
+# Archivos de soporte y documentos confidenciales del hospital (Habeas Data)
+INDICADORES FENIX OCTUBRE/
+soportes/
+*.docx
+*.doc
+*.xlsx
+*.xls
+*.xlsb
+*.pdf
+
+# Archivos de sistema y logs
+*.log
+.DS_Store
+Thumbs.db
